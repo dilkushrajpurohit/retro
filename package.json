@@ -1,0 +1,14 @@
+{
+  "name": "retro-inc-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Retro INC static site served through a Node.js router",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  }
+}

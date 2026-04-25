@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog Access | Retro INC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="catalog-gate-page">
+  <header class="premium-nav" data-premium-nav>
+    <a class="premium-brand" href="index.html">Retro INC</a>
+    <nav class="premium-nav-links" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="products.html" aria-current="page">Products</a>
+      <a href="showroom.html">Showroom</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="catalog-gate-main">
+    <div class="catalog-gate-shell">
+      <section class="catalog-gate-card">
+        <p class="products-section-label">Catalog Security</p>
+        <h1>Enter PIN to view catalog</h1>
+        <p class="catalog-gate-copy">This page is protected. Enter the PIN to continue to the main catalog.</p>
+
+        <form class="catalog-gate-form" data-catalog-pin-form>
+          <label>
+            <span>PIN</span>
+            <input type="password" name="pin" inputmode="numeric" autocomplete="off" placeholder="Enter PIN" required>
+          </label>
+          <button class="catalog-gate-button" type="submit">Open Catalog</button>
+          <p class="catalog-gate-message" data-catalog-pin-message></p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/catalog-access.js"></script>
+</body>
+</html>

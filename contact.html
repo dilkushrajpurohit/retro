@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Contact | Retro INC</title>
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="contact-page">
+	<header class="premium-nav" data-premium-nav>
+		<a class="premium-brand" href="index.html">Retro INC</a>
+		<nav class="premium-nav-links" aria-label="Primary">
+			<a href="index.html">Home</a>
+			<a href="about.html">About Us</a>
+			<a href="products.html">Products</a>
+			<a href="showroom.html">Showroom</a>
+			<a href="contact.html" aria-current="page">Contact</a>
+		</nav>
+	</header>
+
+	<main>
+		<section class="contact-hero">
+			<div class="contact-shell">
+				<p class="contact-eyebrow">Contact Us</p>
+				<h1>Let Us Design Your Space</h1>
+				<p>Share your requirement and our team will call you with custom recommendations for your home or studio.</p>
+			</div>
+		</section>
+
+		<section class="contact-form-section">
+			<div class="contact-shell">
+				<div class="contact-form-card">
+					<h2>Send Message</h2>
+					<p class="contact-form-intro">We reply within one business day with design guidance and catalog recommendations.</p>
+
+					<form class="contact-form" data-contact-form novalidate>
+						<div class="contact-grid">
+							<label class="contact-field">
+								<span>Name</span>
+								<input type="text" name="name" placeholder="Your name" required>
+								<small class="contact-error" data-error-for="name"></small>
+							</label>
+
+							<label class="contact-field">
+								<span>Email</span>
+								<input type="email" name="email" placeholder="you@example.com" required>
+								<small class="contact-error" data-error-for="email"></small>
+							</label>
+
+							<label class="contact-field">
+								<span>Phone Number</span>
+								<input type="tel" name="phone" placeholder="+91 98765 43210" required>
+								<small class="contact-error" data-error-for="phone"></small>
+							</label>
+
+							<label class="contact-field contact-field--full">
+								<span>Message</span>
+								<textarea name="message" rows="5" placeholder="Tell us about your style, room type, and budget." required></textarea>
+								<small class="contact-error" data-error-for="message"></small>
+							</label>
+						</div>
+
+						<button class="contact-submit" type="submit">Send Message</button>
+						<p class="contact-success" data-contact-success role="status" aria-live="polite"></p>
+					</form>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+	<script src="js/contact.js"></script>
+</body>
+</html>

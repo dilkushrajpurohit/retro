@@ -3,30 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chairs | Retro INC</title>
+  <title>Chairs Catalog | Retro INC</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="catalog-page" data-category="chairs">
+<body class="catalog-page product-book-page">
   <header class="premium-nav" data-premium-nav>
     <a class="premium-brand" href="index.html">Retro INC</a>
     <nav class="premium-nav-links" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
-      <a href="products.html" aria-current="page">Products</a>
+      <a href="products.html">Products</a>
+      <a href="showroom.html">Showroom</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
   <main>
-    <section class="catalog-hero">
+    <section class="catalog-hero product-hero">
       <div class="catalog-hero-media">
-        <img data-catalog-hero-image src="assets/img1.jpg" alt="Premium furniture catalog hero">
+        <img src="assets/img2.jpg" alt="Reclaimed wood chair collection">
       </div>
       <div class="catalog-hero-overlay"></div>
       <div class="catalog-shell catalog-hero-copy">
-        <p class="catalog-eyebrow" data-catalog-kicker>Chairs</p>
-        <h1 data-catalog-title>Chairs</h1>
-        <p data-catalog-copy>Luxury handcrafted seating designed with sculpted lines, tactile finishes, and editorial presence.</p>
+        <p class="catalog-eyebrow">Catalog</p>
+        <h1>Chair collection</h1>
+        <p>Comfort-first seating shaped from reclaimed wood and tailored with premium finishes for homes, hospitality, and showrooms.</p>
       </div>
     </section>
 
@@ -34,44 +35,108 @@
       <div class="catalog-shell">
         <div class="catalog-book-head">
           <div>
-            <p class="catalog-section-label">Editorial catalog</p>
-            <h2>Flip through the chairs collection</h2>
+            <p class="catalog-eyebrow">Flipbook</p>
+            <h2>Browse the chair range</h2>
           </div>
-          <div class="catalog-page-counter">
-            <span data-book-current>01</span>
-            <span>/</span>
-            <span data-book-total>04</span>
+          <div class="catalog-page-counter"><span data-catalog-page-current>01</span><span>/</span><span data-catalog-page-total>04</span></div>
+        </div>
+
+        <div class="catalog-book-controls catalog-book-controls--side catalog-book-controls--left">
+          <button class="catalog-control-button" type="button" data-catalog-prev>Previous</button>
+        </div>
+
+        <div class="catalog-book-stage-shell">
+          <div class="catalog-book-stage" data-catalog-stage>
+            <div class="catalog-book-content" data-catalog-content></div>
           </div>
         </div>
 
-        <div class="catalog-book-controls">
-          <div class="catalog-book-controls-group">
-            <button class="catalog-control-button" type="button" data-book-prev>&larr; Previous</button>
-            <button class="catalog-control-button" type="button" data-book-next>Next &rarr;</button>
-          </div>
-          <div class="catalog-book-controls-group">
-            <label class="catalog-jump-label" for="chairs-jump">Jump to page</label>
-            <input id="chairs-jump" class="catalog-jump-input" type="number" min="1" step="1" value="1" data-book-jump>
-            <button class="catalog-control-button" type="button" data-book-jump-go>Go</button>
-          </div>
-          <div class="catalog-book-controls-group catalog-book-zoom-group">
-            <button class="catalog-control-button" type="button" data-book-zoom-out>-</button>
-            <input class="catalog-zoom-slider" type="range" min="0.9" max="1.12" step="0.01" value="1" data-book-zoom>
-            <button class="catalog-control-button" type="button" data-book-zoom-in>+</button>
-          </div>
+        <div class="catalog-book-controls catalog-book-controls--side catalog-book-controls--right">
+          <button class="catalog-control-button" type="button" data-catalog-next>Next</button>
         </div>
 
-        <div class="catalog-book-stage" data-book-stage>
-          <div class="catalog-book-content" data-book-content></div>
+        <div class="catalog-book-controls catalog-book-controls--bottom">
+          <div class="catalog-book-controls-group catalog-book-controls-group--center">
+            <button class="catalog-control-button" type="button" data-catalog-zoom-out>Zoom -</button>
+            <input class="catalog-zoom-slider" type="range" min="0.9" max="1.12" step="0.01" value="1" data-catalog-zoom>
+            <button class="catalog-control-button" type="button" data-catalog-zoom-in>Zoom +</button>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
-  <script src="js/catalog-data.js"></script>
+  <script>
+    window.RetroCatalogConfig = {
+      pages: [
+        {
+          title: 'Lounge Chair',
+          description: 'A wide-stance lounge chair with a softened profile, designed for premium living rooms and reception spaces.',
+          image: 'assets/img2.jpg',
+          imageAlt: 'Lounge chair in reclaimed wood',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed teak' },
+            { label: 'Finish', value: 'Natural matte' },
+            { label: 'Lead time', value: '4-6 weeks' },
+            { label: 'Use', value: 'Living / Hospitality' }
+          ],
+          ctaLabel: 'Enquire About Chairs',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'View Products',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Dining Chair',
+          description: 'Balanced proportions and a supportive back make this chair suitable for dining rooms, cafes, and boutique spaces.',
+          image: 'assets/img3.jpg',
+          imageAlt: 'Dining chair detail',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed mango wood' },
+            { label: 'Finish', value: 'Hand-rubbed oil' },
+            { label: 'Lead time', value: '3-5 weeks' },
+            { label: 'Use', value: 'Dining / Cafe' }
+          ],
+          ctaLabel: 'Request a Sample',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'Back to Catalog',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Accent Chair',
+          description: 'A sculptural accent chair that adds texture and warmth to corners, reading spaces, and curated interiors.',
+          image: 'assets/img5.jpg',
+          imageAlt: 'Accent chair with handcrafted finish',
+          specs: [
+            { label: 'Wood', value: 'Solid reclaimed wood' },
+            { label: 'Finish', value: 'Custom stain options' },
+            { label: 'Lead time', value: '4-6 weeks' },
+            { label: 'Use', value: 'Accent / Lounge' }
+          ],
+          ctaLabel: 'Customise This Piece',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'View Products',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Dining Bench',
+          description: 'A versatile bench that pairs with dining tables or entry spaces, keeping the grain and structure visible.',
+          image: 'assets/img1.jpg',
+          imageAlt: 'Dining bench with reclaimed wood structure',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed hardwood' },
+            { label: 'Finish', value: 'Low-sheen seal' },
+            { label: 'Lead time', value: '3-4 weeks' },
+            { label: 'Use', value: 'Dining / Entry' }
+          ],
+          ctaLabel: 'Talk to Sales',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'Browse Tables',
+          secondaryHref: 'tables.html'
+        }
+      ]
+    };
+  </script>
+  <script src="js/flipbook.js"></script>
   <script src="js/catalog.js"></script>
 </body>
 </html>

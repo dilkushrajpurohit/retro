@@ -35,9 +35,17 @@
         return { destroy() {} };
       }
 
+      contentEl.classList.add("flipbook-sheet");
+      contentEl.style.visibility = "visible";
+
+      if (!stageEl.hasAttribute("tabindex")) {
+        stageEl.setAttribute("tabindex", "0");
+      }
+
       let index = 0;
       let zoom = clamp(initialZoom, minZoom, maxZoom);
       let busy = false;
+      let pointerStartX = null;
 
       const syncControls = () => {
         const current = String(index + 1).padStart(2, "0");
@@ -125,6 +133,44 @@
       const zoomInHandler = () => applyZoom(zoom + 0.06);
       const zoomOutHandler = () => applyZoom(zoom - 0.06);
       const zoomRangeHandler = (event) => applyZoom(Number(event.target.value));
+      const keyHandler = (event) => {
+        const targetTag = event.target?.tagName;
+
+        if (["INPUT", "TEXTAREA", "SELECT"].includes(targetTag)) {
+          return;
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          step(-1);
+        }
+
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          step(1);
+        }
+      };
+      const pointerDownHandler = (event) => {
+        if (event.pointerType === "mouse" && event.button !== 0) {
+          return;
+        }
+
+        pointerStartX = event.clientX;
+      };
+      const pointerUpHandler = (event) => {
+        if (pointerStartX === null) {
+          return;
+        }
+
+        const delta = event.clientX - pointerStartX;
+        pointerStartX = null;
+
+        if (Math.abs(delta) < 40) {
+          return;
+        }
+
+        step(delta < 0 ? 1 : -1);
+      };
 
       if (prevButton) {
         prevButton.addEventListener("click", prevHandler);
@@ -146,10 +192,28 @@
         zoomRangeEl.addEventListener("input", zoomRangeHandler);
       }
 
+      stageEl.addEventListener("pointerdown", pointerDownHandler);
+      stageEl.addEventListener("pointerup", pointerUpHandler);
+      window.addEventListener("keydown", keyHandler);
+
       zoom = setZoom(stageEl, zoom, minZoom, maxZoom, zoomRangeEl);
       paint(index);
 
       return {
+        goTo(nextIndex) {
+          const targetIndex = Number(nextIndex);
+          if (Number.isNaN(targetIndex)) {
+            return;
+          }
+
+          goTo(clamp(Math.round(targetIndex), 0, pages.length - 1));
+        },
+        getCurrentPageIndex() {
+          return index;
+        },
+        getTotalPages() {
+          return pages.length;
+        },
         destroy() {
           if (prevButton) {
             prevButton.removeEventListener("click", prevHandler);
@@ -170,6 +234,10 @@
           if (zoomRangeEl) {
             zoomRangeEl.removeEventListener("input", zoomRangeHandler);
           }
+
+          stageEl.removeEventListener("pointerdown", pointerDownHandler);
+          stageEl.removeEventListener("pointerup", pointerUpHandler);
+          window.removeEventListener("keydown", keyHandler);
         }
       };
     }

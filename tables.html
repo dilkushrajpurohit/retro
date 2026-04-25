@@ -3,30 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tables | Retro INC</title>
+  <title>Tables Catalog | Retro INC</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="catalog-page" data-category="tables">
+<body class="catalog-page product-book-page">
   <header class="premium-nav" data-premium-nav>
     <a class="premium-brand" href="index.html">Retro INC</a>
     <nav class="premium-nav-links" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
-      <a href="products.html" aria-current="page">Products</a>
+      <a href="products.html">Products</a>
+      <a href="showroom.html">Showroom</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
   <main>
-    <section class="catalog-hero">
+    <section class="catalog-hero product-hero">
       <div class="catalog-hero-media">
-        <img data-catalog-hero-image src="assets/img2.jpg" alt="Premium furniture catalog hero">
+        <img src="assets/img3.jpg" alt="Reclaimed wood table collection">
       </div>
       <div class="catalog-hero-overlay"></div>
       <div class="catalog-shell catalog-hero-copy">
-        <p class="catalog-eyebrow" data-catalog-kicker>Tables</p>
-        <h1 data-catalog-title>Tables</h1>
-        <p data-catalog-copy>Luxury handcrafted dining and lounge tables with balanced proportions and premium material depth.</p>
+        <p class="catalog-eyebrow">Catalog</p>
+        <h1>Table collection</h1>
+        <p>Dining tables, coffee tables, and side tables designed to carry the material story of reclaimed wood through the center of the room.</p>
       </div>
     </section>
 
@@ -34,44 +35,108 @@
       <div class="catalog-shell">
         <div class="catalog-book-head">
           <div>
-            <p class="catalog-section-label">Editorial catalog</p>
-            <h2>Flip through the tables collection</h2>
+            <p class="catalog-eyebrow">Flipbook</p>
+            <h2>Browse the table range</h2>
           </div>
-          <div class="catalog-page-counter">
-            <span data-book-current>01</span>
-            <span>/</span>
-            <span data-book-total>04</span>
+          <div class="catalog-page-counter"><span data-catalog-page-current>01</span><span>/</span><span data-catalog-page-total>04</span></div>
+        </div>
+
+        <div class="catalog-book-controls catalog-book-controls--side catalog-book-controls--left">
+          <button class="catalog-control-button" type="button" data-catalog-prev>Previous</button>
+        </div>
+
+        <div class="catalog-book-stage-shell">
+          <div class="catalog-book-stage" data-catalog-stage>
+            <div class="catalog-book-content" data-catalog-content></div>
           </div>
         </div>
 
-        <div class="catalog-book-controls">
-          <div class="catalog-book-controls-group">
-            <button class="catalog-control-button" type="button" data-book-prev>&larr; Previous</button>
-            <button class="catalog-control-button" type="button" data-book-next>Next &rarr;</button>
-          </div>
-          <div class="catalog-book-controls-group">
-            <label class="catalog-jump-label" for="tables-jump">Jump to page</label>
-            <input id="tables-jump" class="catalog-jump-input" type="number" min="1" step="1" value="1" data-book-jump>
-            <button class="catalog-control-button" type="button" data-book-jump-go>Go</button>
-          </div>
-          <div class="catalog-book-controls-group catalog-book-zoom-group">
-            <button class="catalog-control-button" type="button" data-book-zoom-out>-</button>
-            <input class="catalog-zoom-slider" type="range" min="0.9" max="1.12" step="0.01" value="1" data-book-zoom>
-            <button class="catalog-control-button" type="button" data-book-zoom-in>+</button>
-          </div>
+        <div class="catalog-book-controls catalog-book-controls--side catalog-book-controls--right">
+          <button class="catalog-control-button" type="button" data-catalog-next>Next</button>
         </div>
 
-        <div class="catalog-book-stage" data-book-stage>
-          <div class="catalog-book-content" data-book-content></div>
+        <div class="catalog-book-controls catalog-book-controls--bottom">
+          <div class="catalog-book-controls-group catalog-book-controls-group--center">
+            <button class="catalog-control-button" type="button" data-catalog-zoom-out>Zoom -</button>
+            <input class="catalog-zoom-slider" type="range" min="0.9" max="1.12" step="0.01" value="1" data-catalog-zoom>
+            <button class="catalog-control-button" type="button" data-catalog-zoom-in>Zoom +</button>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
-  <script src="js/catalog-data.js"></script>
+  <script>
+    window.RetroCatalogConfig = {
+      pages: [
+        {
+          title: 'Dining Table',
+          description: 'A statement table with a generous top, suited to family homes, villas, and hospitality dining zones.',
+          image: 'assets/img3.jpg',
+          imageAlt: 'Dining table in reclaimed wood',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed teak' },
+            { label: 'Seats', value: '6 to 10' },
+            { label: 'Finish', value: 'Natural oil' },
+            { label: 'Use', value: 'Dining room' }
+          ],
+          ctaLabel: 'Enquire About Tables',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'View Products',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Coffee Table',
+          description: 'Low, balanced proportions with visible grain and warm tones make it an easy anchor for living spaces.',
+          image: 'assets/img4.jpg',
+          imageAlt: 'Coffee table detail',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed hardwood' },
+            { label: 'Height', value: 'Customisable' },
+            { label: 'Finish', value: 'Matte seal' },
+            { label: 'Use', value: 'Lounge / Living' }
+          ],
+          ctaLabel: 'Request a Quote',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'Back to Catalog',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Console Table',
+          description: 'Slim, architectural and adaptable for entryways, behind-sofa placement, or compact commercial spaces.',
+          image: 'assets/img5.jpg',
+          imageAlt: 'Console table in reclaimed wood',
+          specs: [
+            { label: 'Wood', value: 'Solid reclaimed wood' },
+            { label: 'Width', value: 'Custom sizing' },
+            { label: 'Finish', value: 'Stain or oil' },
+            { label: 'Use', value: 'Entry / Display' }
+          ],
+          ctaLabel: 'Customise This Piece',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'Browse Chairs',
+          secondaryHref: 'chairs.html'
+        },
+        {
+          title: 'Side Table',
+          description: 'A compact companion piece that keeps the wood grain and hand-finished surface visible from every angle.',
+          image: 'assets/img1.jpg',
+          imageAlt: 'Side table with premium finish',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed hardwood' },
+            { label: 'Diameter', value: 'Customisable' },
+            { label: 'Finish', value: 'Warm matte' },
+            { label: 'Use', value: 'Bedroom / Lounge' }
+          ],
+          ctaLabel: 'Talk to Sales',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'View Products',
+          secondaryHref: 'products.html'
+        }
+      ]
+    };
+  </script>
+  <script src="js/flipbook.js"></script>
   <script src="js/catalog.js"></script>
 </body>
 </html>

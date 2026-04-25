@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalog | Retro INC</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "General Sans", "Geist Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(1200px 560px at 92% -10%, rgba(200, 165, 118, 0.2), transparent 60%),
+        radial-gradient(900px 400px at 0% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
+        #110f0d;
+      color: #f7f3ed;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .catalog-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 28px;
+      background: rgba(17, 15, 13, 0.78);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(247, 243, 237, 0.12);
+    }
+
+    .catalog-brand {
+      letter-spacing: 0.22em;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+    }
+
+    .catalog-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .catalog-chip,
+    .catalog-button,
+    .catalog-ghost {
+      border: 1px solid rgba(247, 243, 237, 0.22);
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: #f7f3ed;
+      background: rgba(247, 243, 237, 0.06);
+      text-decoration: none;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .catalog-button {
+      background: linear-gradient(135deg, #f3d2aa, #b78a58);
+      color: #21160d;
+      border-color: transparent;
+      font-weight: 700;
+      box-shadow: 0 14px 26px rgba(183, 138, 88, 0.32);
+    }
+
+    .catalog-chip:hover,
+    .catalog-button:hover,
+    .catalog-ghost:hover {
+      transform: translateY(-2px);
+      background: rgba(247, 243, 237, 0.14);
+    }
+
+    .catalog-button:hover {
+      background: linear-gradient(135deg, #f6d9b5, #c59662);
+    }
+
+    .catalog-shell {
+      width: min(1280px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .catalog-hero {
+      padding: 42px 0 26px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .catalog-hero-copy {
+      border-radius: 30px;
+      padding: 30px;
+      background: linear-gradient(140deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(247, 243, 237, 0.16);
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+    }
+
+    .catalog-eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      color: rgba(247, 243, 237, 0.72);
+    }
+
+    .catalog-hero-copy h1 {
+      margin-top: 12px;
+      font-size: clamp(2rem, 4.8vw, 4rem);
+      line-height: 1.03;
+      font-weight: 700;
+      max-width: 16ch;
+    }
+
+    .catalog-hero-copy p {
+      margin-top: 14px;
+      max-width: 55ch;
+      color: rgba(247, 243, 237, 0.84);
+      line-height: 1.74;
+    }
+
+    .catalog-hero-visual {
+      border-radius: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(247, 243, 237, 0.14);
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+      min-height: 280px;
+      position: relative;
+    }
+
+    .catalog-hero-visual img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      transform: scale(1.04);
+    }
+
+    .catalog-stage-wrap {
+      padding: 10px 0 38px;
+    }
+
+    .catalog-stage-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .catalog-stage-head p {
+      color: rgba(247, 243, 237, 0.72);
+      font-size: 0.92rem;
+    }
+
+    .catalog-page-indicator {
+      font-size: 1rem;
+      color: rgba(247, 243, 237, 0.82);
+      min-width: 96px;
+      text-align: right;
+    }
+
+    .flipbook-container {
+      border-radius: 30px;
+      padding: 20px;
+      background: linear-gradient(140deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(247, 243, 237, 0.16);
+      box-shadow: 0 28px 66px rgba(0, 0, 0, 0.3);
+    }
+
+    .book {
+      width: 100%;
+      height: clamp(380px, 60vh, 560px);
+      position: relative;
+      perspective: 3200px;
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    .spread {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-origin: center;
+      transform-style: preserve-3d;
+      transition: transform 1s ease;
+      cursor: pointer;
+    }
+
+    .spread.flipped {
+      transform: rotateY(-180deg);
+    }
+
+    .side {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      backface-visibility: hidden;
+      background: #f7f2ea;
+      color: #1a130c;
+    }
+
+    .front {
+      z-index: 2;
+    }
+
+    .back {
+      transform: rotateY(180deg);
+      background: linear-gradient(130deg, #efe4d3, #ddccb2);
+    }
+
+    .page-half {
+      width: 50%;
+      min-height: 100%;
+    }
+
+    .left {
+      background: #120f0d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+
+    .left img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    .right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      padding: 28px;
+    }
+
+    .item-tag {
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.73rem;
+      color: rgba(26, 19, 12, 0.58);
+    }
+
+    .right h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      line-height: 1.06;
+      font-weight: 700;
+    }
+
+    .right p {
+      line-height: 1.75;
+      color: rgba(26, 19, 12, 0.82);
+    }
+
+    .item-price {
+      margin-top: 4px;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #6d4b2a;
+    }
+
+    .book::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 3px;
+      height: 100%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.08);
+      z-index: 7;
+      pointer-events: none;
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      border-radius: 999px;
+      border: 1px solid rgba(247, 243, 237, 0.24);
+      background: rgba(247, 243, 237, 0.08);
+      color: #f7f3ed;
+      padding: 10px 18px;
+      font: inherit;
+      cursor: pointer;
+      transition: transform 0.24s ease, background 0.24s ease;
+    }
+
+    .controls button:hover {
+      transform: translateY(-2px);
+      background: rgba(247, 243, 237, 0.16);
+    }
+
+    .catalog-status {
+      margin-top: 14px;
+      text-align: center;
+      color: rgba(247, 243, 237, 0.7);
+      min-height: 1.3em;
+    }
+
+    .catalog-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .catalog-modal.is-open {
+      display: flex;
+    }
+
+    .catalog-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.56);
+      backdrop-filter: blur(10px);
+    }
+
+    .catalog-modal-panel {
+      position: relative;
+      z-index: 1;
+      width: min(96vw, 560px);
+      border-radius: 24px;
+      background: #fffaf3;
+      color: #1a130c;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 28px 62px rgba(0, 0, 0, 0.3);
+      padding: 24px;
+    }
+
+    .catalog-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: transparent;
+      border: 0;
+      font-size: 1.9rem;
+      color: rgba(26, 19, 12, 0.62);
+      cursor: pointer;
+    }
+
+    .catalog-modal-step {
+      display: none;
+    }
+
+    .catalog-modal-step.is-active {
+      display: block;
+    }
+
+    .catalog-modal h2 {
+      margin-top: 8px;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      line-height: 1.08;
+    }
+
+    .catalog-modal-copy {
+      margin-top: 10px;
+      color: rgba(26, 19, 12, 0.74);
+      line-height: 1.68;
+    }
+
+    .catalog-form {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .catalog-form label {
+      display: grid;
+      gap: 6px;
+    }
+
+    .catalog-form span {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(26, 19, 12, 0.58);
+    }
+
+    .catalog-form input,
+    .catalog-form textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(26, 19, 12, 0.18);
+      background: #ffffff;
+      font: inherit;
+      color: #1a130c;
+      padding: 12px 14px;
+    }
+
+    .catalog-form textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .catalog-submit {
+      margin-top: 6px;
+      border: 0;
+      border-radius: 999px;
+      background: #1a130c;
+      color: #f7f3ed;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .catalog-message {
+      min-height: 1.2em;
+      color: rgba(26, 19, 12, 0.68);
+    }
+
+    .catalog-message[data-tone="error"] {
+      color: #a32121;
+    }
+
+    .catalog-message[data-tone="success"] {
+      color: #216839;
+    }
+
+    @media (max-width: 960px) {
+      .catalog-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .side {
+        flex-direction: column;
+      }
+
+      .page-half {
+        width: 100%;
+      }
+
+      .left {
+        min-height: 220px;
+      }
+
+      .right {
+        padding: 22px;
+      }
+
+      .book {
+        height: clamp(450px, 68vh, 700px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .catalog-topbar {
+        padding: 14px;
+      }
+
+      .catalog-shell {
+        width: calc(100% - 24px);
+      }
+
+      .catalog-topbar-right {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .catalog-hero {
+        padding-top: 20px;
+      }
+
+      .flipbook-container {
+        padding: 12px;
+      }
+
+      .book {
+        height: 560px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="catalog-topbar">
+    <div class="catalog-brand">Retro Catalog</div>
+    <div class="catalog-topbar-right">
+      <a class="catalog-chip" href="products.html">Back to Products</a>
+      <button class="catalog-button" type="button" data-open-add-item>Add Item</button>
+    </div>
+  </header>
+
+  <main class="catalog-shell">
+    <section class="catalog-hero">
+      <article class="catalog-hero-copy">
+        <p class="catalog-eyebrow">Premium Collection</p>
+        <h1>Handcrafted catalog with flipbook luxury feel</h1>
+        <p>Explore each product like a curated print spread. Authorized team members can add new items that appear instantly in this catalog.</p>
+      </article>
+      <figure class="catalog-hero-visual" aria-hidden="true">
+        <img src="/assets/img2.jpg" alt="">
+      </figure>
+    </section>
+
+    <section class="catalog-stage-wrap">
+      <div class="catalog-stage-head">
+        <p>Click page or use controls to flip. Newly added products are inserted at the start.</p>
+        <div class="catalog-page-indicator" data-page-indicator>Page 01 / 01</div>
+      </div>
+      <div class="flipbook-container">
+        <div class="book" id="catalog-book"></div>
+      </div>
+      <div class="controls">
+        <button type="button" data-prev-page>Prev</button>
+        <button type="button" data-next-page>Next</button>
+      </div>
+      <p class="catalog-status" data-catalog-status>Loading catalog...</p>
+    </section>
+  </main>
+
+  <div class="catalog-modal" data-catalog-modal>
+    <div class="catalog-modal-backdrop" data-close-catalog-modal></div>
+    <div class="catalog-modal-panel" role="dialog" aria-modal="true" aria-labelledby="catalog-modal-title">
+      <button class="catalog-modal-close" type="button" data-close-catalog-modal aria-label="Close">x</button>
+
+      <section class="catalog-modal-step is-active" data-catalog-step="verify">
+        <p class="catalog-eyebrow">Authorized Access</p>
+        <h2 id="catalog-modal-title">Verify phone and password</h2>
+        <p class="catalog-modal-copy">Only the 3 approved numbers can add new catalog products.</p>
+        <form class="catalog-form" data-catalog-auth-form>
+          <label>
+            <span>Phone number</span>
+            <input type="tel" name="phone" placeholder="Enter phone number" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" placeholder="Enter password" required>
+          </label>
+          <button class="catalog-submit" type="submit">Verify Access</button>
+          <p class="catalog-message" data-catalog-auth-message></p>
+        </form>
+      </section>
+
+      <section class="catalog-modal-step" data-catalog-step="verify-second">
+        <p class="catalog-eyebrow">Final Verification</p>
+        <h2>Verify again to continue</h2>
+        <p class="catalog-modal-copy">Enter the same approved phone number and password one more time before opening the add-item form.</p>
+        <form class="catalog-form" data-catalog-auth-form-second>
+          <label>
+            <span>Phone number</span>
+            <input type="tel" name="phone" placeholder="Enter phone number" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" placeholder="Enter password" required>
+          </label>
+          <button class="catalog-submit" type="submit">Final Verify</button>
+          <p class="catalog-message" data-catalog-auth-message-second></p>
+        </form>
+      </section>
+
+      <section class="catalog-modal-step" data-catalog-step="add">
+        <p class="catalog-eyebrow">Add Catalog Item</p>
+        <h2>Add product to flipbook</h2>
+        <p class="catalog-modal-copy">Provide the product details. On submit, the item is stored and shown in the catalog immediately.</p>
+        <form class="catalog-form" data-catalog-item-form>
+          <label>
+            <span>Product name</span>
+            <input type="text" name="name" placeholder="Product name" required>
+          </label>
+          <label>
+            <span>Product photo</span>
+            <input type="file" name="photo" accept="image/*" required>
+          </label>
+          <label>
+            <span>Description</span>
+            <textarea name="description" placeholder="Write product description" required></textarea>
+          </label>
+          <label>
+            <span>Price</span>
+            <input type="text" name="price" placeholder="e.g. 7999" required>
+          </label>
+          <button class="catalog-submit" type="submit">Submit Item</button>
+          <p class="catalog-message" data-catalog-item-message></p>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/catalog-page.js"></script>
+</body>
+</html>

@@ -1,55 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products | Retro INC</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products | Retro INC</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="products-page">
-    <header class="premium-nav" data-premium-nav>
-        <a class="premium-brand" href="index.html">Retro INC</a>
-        <nav class="premium-nav-links" aria-label="Primary">
-            <a href="index.html">Home</a>
-            <a href="about.html">About Us</a>
-            <a href="products.html" aria-current="page">Products</a>
-            <a href="contact.html">Contact</a>
-        </nav>
-    </header>
+  <header class="premium-nav" data-premium-nav>
+    <a class="premium-brand" href="index.html">Retro INC</a>
+    <nav class="premium-nav-links" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="products.html" aria-current="page">Products</a>
+      <a href="showroom.html">Showroom</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 
-    <main>
-        <section class="products-hero">
-            <div class="products-hero-media">
-                <img src="assets/img1.jpg" alt="Premium Retro INC furniture">
-            </div>
-            <div class="products-hero-overlay"></div>
-            <div class="products-shell products-hero-content">
-                <p class="products-eyebrow">Retro INC Collection</p>
-                <h1>Our Products</h1>
-                <p class="products-hero-copy">Luxury handcrafted furniture and premium decor, curated as a cinematic category journey.</p>
-            </div>
-        </section>
+  <main>
+    <section class="products-hero products-admin-hero">
+      <div class="products-hero-media" aria-hidden="true">
+        <img src="assets/img1.jpg" alt="">
+      </div>
+      <div class="products-hero-overlay" aria-hidden="true"></div>
+      <div class="products-shell products-hero-content">
+        <p class="products-eyebrow">Products</p>
+        <h1>Products</h1>
+        <p class="products-hero-copy">Browse the live product list. Verified team members can add new products from the plus button below.</p>
+      </div>
+    </section>
 
-        <section class="products-story" id="products-story" aria-label="Products category storytelling">
-            <div class="products-story-sticky">
-                <div class="products-story-bg-stack" aria-hidden="true"></div>
-                <div class="products-story-card-stack"></div>
-                <nav class="products-story-timeline" aria-label="Product categories"></nav>
-            </div>
-        </section>
+    <section class="products-toolbar-section">
+      <div class="products-shell products-toolbar">
+        <div>
+          <p class="products-section-label">Product section</p>
+          <h2>Available products</h2>
+        </div>
+        <button class="products-add-button" type="button" data-open-product-modal aria-label="Add product">+</button>
+      </div>
+    </section>
 
-        <section class="products-final">
-            <div class="products-shell products-final-inner">
-                <p class="products-eyebrow">Catalog system</p>
-                <h2>Each category opens into its own editorial flipbook and product pages.</h2>
-                <a class="products-final-button" href="chairs.html">Start with Chairs</a>
-            </div>
-        </section>
-    </main>
+    <section class="products-list-section">
+      <div class="products-shell">
+        <p class="products-status" data-products-status>Loading products...</p>
+        <div class="products-list" data-products-list></div>
+      </div>
+    </section>
+  </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="js/catalog-data.js"></script>
-    <script src="js/products.js"></script>
+  <div class="products-modal" data-admin-modal hidden>
+    <div class="products-modal-backdrop" data-close-modal></div>
+    <div class="products-modal-panel" role="dialog" aria-modal="true" aria-labelledby="products-modal-title">
+      <button class="products-modal-close" type="button" data-close-modal aria-label="Close">×</button>
+
+      <div class="products-modal-step is-active" data-modal-step="verify">
+        <p class="products-section-label">Verified access</p>
+        <h2 id="products-modal-title">Enter your number and password</h2>
+        <p class="products-modal-copy">Only approved team numbers can add products.</p>
+        <form class="products-auth-form" data-auth-form>
+          <label>
+            <span>Number</span>
+            <input type="tel" name="phone" placeholder="Your number" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" name="password" placeholder="Password" required>
+          </label>
+          <button class="products-submit-button" type="submit">Verify</button>
+          <p class="products-form-message" data-auth-message></p>
+        </form>
+      </div>
+
+      <div class="products-modal-step" data-modal-step="add">
+        <p class="products-section-label">Add product</p>
+        <h2>Add a new product</h2>
+        <p class="products-modal-copy">Upload a photo, write the details, and save it to the product database.</p>
+        <form class="products-add-form" data-product-form>
+          <label>
+            <span>Product name</span>
+            <input type="text" name="name" placeholder="New product name" required>
+          </label>
+          <label>
+            <span>Product photo</span>
+            <input type="file" name="photo" accept="image/*" required>
+          </label>
+          <label>
+            <span>Product description</span>
+            <textarea name="description" rows="5" placeholder="Describe the product" required></textarea>
+          </label>
+          <button class="products-submit-button" type="submit">Add Now</button>
+          <p class="products-form-message" data-product-message></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/products.js"></script>
 </body>
 </html>

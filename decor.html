@@ -3,30 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Decor | Retro INC</title>
+  <title>Accessories Catalog | Retro INC</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="catalog-page" data-category="decor">
+<body class="catalog-page product-book-page">
   <header class="premium-nav" data-premium-nav>
     <a class="premium-brand" href="index.html">Retro INC</a>
     <nav class="premium-nav-links" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
-      <a href="products.html" aria-current="page">Products</a>
+      <a href="products.html">Products</a>
+      <a href="showroom.html">Showroom</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
 
   <main>
-    <section class="catalog-hero">
+    <section class="catalog-hero product-hero">
       <div class="catalog-hero-media">
-        <img data-catalog-hero-image src="assets/img5.jpg" alt="Premium furniture catalog hero">
+        <img src="assets/img5.jpg" alt="Reclaimed wood accessories collection">
       </div>
       <div class="catalog-hero-overlay"></div>
       <div class="catalog-shell catalog-hero-copy">
-        <p class="catalog-eyebrow" data-catalog-kicker>Decor</p>
-        <h1 data-catalog-title>Decor</h1>
-        <p data-catalog-copy>Small-scale objects and accents selected to finish a room with tactility, balance, and elegance.</p>
+        <p class="catalog-eyebrow">Catalog</p>
+        <h1>Accessories collection</h1>
+        <p>Smaller handcrafted pieces that extend the same reclaimed wood story into decorative, practical, and giftable forms.</p>
       </div>
     </section>
 
@@ -34,44 +35,108 @@
       <div class="catalog-shell">
         <div class="catalog-book-head">
           <div>
-            <p class="catalog-section-label">Editorial catalog</p>
-            <h2>Flip through the decor collection</h2>
+            <p class="catalog-eyebrow">Flipbook</p>
+            <h2>Browse the accessories range</h2>
           </div>
-          <div class="catalog-page-counter">
-            <span data-book-current>01</span>
-            <span>/</span>
-            <span data-book-total>04</span>
+          <div class="catalog-page-counter"><span data-catalog-page-current>01</span><span>/</span><span data-catalog-page-total>04</span></div>
+        </div>
+
+        <div class="catalog-book-controls catalog-book-controls--side catalog-book-controls--left">
+          <button class="catalog-control-button" type="button" data-catalog-prev>Previous</button>
+        </div>
+
+        <div class="catalog-book-stage-shell">
+          <div class="catalog-book-stage" data-catalog-stage>
+            <div class="catalog-book-content" data-catalog-content></div>
           </div>
         </div>
 
-        <div class="catalog-book-controls">
-          <div class="catalog-book-controls-group">
-            <button class="catalog-control-button" type="button" data-book-prev>&larr; Previous</button>
-            <button class="catalog-control-button" type="button" data-book-next>Next &rarr;</button>
-          </div>
-          <div class="catalog-book-controls-group">
-            <label class="catalog-jump-label" for="decor-jump">Jump to page</label>
-            <input id="decor-jump" class="catalog-jump-input" type="number" min="1" step="1" value="1" data-book-jump>
-            <button class="catalog-control-button" type="button" data-book-jump-go>Go</button>
-          </div>
-          <div class="catalog-book-controls-group catalog-book-zoom-group">
-            <button class="catalog-control-button" type="button" data-book-zoom-out>-</button>
-            <input class="catalog-zoom-slider" type="range" min="0.9" max="1.12" step="0.01" value="1" data-book-zoom>
-            <button class="catalog-control-button" type="button" data-book-zoom-in>+</button>
-          </div>
+        <div class="catalog-book-controls catalog-book-controls--side catalog-book-controls--right">
+          <button class="catalog-control-button" type="button" data-catalog-next>Next</button>
         </div>
 
-        <div class="catalog-book-stage" data-book-stage>
-          <div class="catalog-book-content" data-book-content></div>
+        <div class="catalog-book-controls catalog-book-controls--bottom">
+          <div class="catalog-book-controls-group catalog-book-controls-group--center">
+            <button class="catalog-control-button" type="button" data-catalog-zoom-out>Zoom -</button>
+            <input class="catalog-zoom-slider" type="range" min="0.9" max="1.12" step="0.01" value="1" data-catalog-zoom>
+            <button class="catalog-control-button" type="button" data-catalog-zoom-in>Zoom +</button>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
-  <script src="js/catalog-data.js"></script>
+  <script>
+    window.RetroCatalogConfig = {
+      pages: [
+        {
+          title: 'Decor Tray',
+          description: 'A compact tray carved from reclaimed wood for tabletop styling, serving, or curated retail displays.',
+          image: 'assets/img5.jpg',
+          imageAlt: 'Decor tray in reclaimed wood',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed teak' },
+            { label: 'Finish', value: 'Food-safe seal' },
+            { label: 'Lead time', value: '2-3 weeks' },
+            { label: 'Use', value: 'Display / Serving' }
+          ],
+          ctaLabel: 'Enquire About Accessories',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'View Products',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Mirror Frame',
+          description: 'A clean-lined frame that adds warmth and texture while keeping the material story visible in reflections.',
+          image: 'assets/img4.jpg',
+          imageAlt: 'Mirror frame in reclaimed wood',
+          specs: [
+            { label: 'Wood', value: 'Solid reclaimed wood' },
+            { label: 'Size', value: 'Customisable' },
+            { label: 'Finish', value: 'Natural or stained' },
+            { label: 'Use', value: 'Wall decor' }
+          ],
+          ctaLabel: 'Request Pricing',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'Back to Catalog',
+          secondaryHref: 'products.html'
+        },
+        {
+          title: 'Lamp Base',
+          description: 'A sculpted lamp base that keeps the profile grounded and lets the grain remain the focal point.',
+          image: 'assets/img1.jpg',
+          imageAlt: 'Lamp base with reclaimed wood texture',
+          specs: [
+            { label: 'Wood', value: 'Reclaimed hardwood' },
+            { label: 'Finish', value: 'Hand-rubbed matte' },
+            { label: 'Lead time', value: '2-4 weeks' },
+            { label: 'Use', value: 'Lighting accent' }
+          ],
+          ctaLabel: 'Talk to Sales',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'Browse Tables',
+          secondaryHref: 'tables.html'
+        },
+        {
+          title: 'Table Accent',
+          description: 'Small accent pieces that work as gifts, styling objects, or finishing details for larger furniture sets.',
+          image: 'assets/img3.jpg',
+          imageAlt: 'Small accent object made from reclaimed wood',
+          specs: [
+            { label: 'Wood', value: 'Mixed reclaimed stock' },
+            { label: 'Finish', value: 'Custom options' },
+            { label: 'Lead time', value: '2-3 weeks' },
+            { label: 'Use', value: 'Decor / Gifting' }
+          ],
+          ctaLabel: 'Customise This Piece',
+          ctaHref: 'contact.html',
+          secondaryLabel: 'View Products',
+          secondaryHref: 'products.html'
+        }
+      ]
+    };
+  </script>
+  <script src="js/flipbook.js"></script>
   <script src="js/catalog.js"></script>
 </body>
 </html>

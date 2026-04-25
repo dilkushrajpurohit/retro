@@ -1,31 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Virtual Showroom</title>
-
-<!-- Pannellum 360 Viewer -->
-<link rel="stylesheet" href="https://cdn.pannellum.org/2.5/pannellum.css"/>
-<script src="https://cdn.pannellum.org/2.5/pannellum.js"></script>
-
-<style>
-#panorama {
-    width: 100%;
-    height: 100vh;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Showroom | Retro INC</title>
+    <link rel="stylesheet" href="https://cdn.pannellum.org/2.5/pannellum.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="showroom-page">
+    <header class="premium-nav" data-premium-nav>
+        <a class="premium-brand" href="index.html">Retro INC</a>
+        <nav class="premium-nav-links" aria-label="Primary">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="products.html">Products</a>
+            <a href="showroom.html" aria-current="page">Showroom</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
 
-<div id="panorama"></div>
+    <main>
+        <section class="showroom-hero">
+            <div class="showroom-shell">
+                <p class="showroom-eyebrow">Virtual Tour</p>
+                <h1>Step Inside The Retro Showroom</h1>
+                <p>Drag to rotate 360 degrees, click hotspots to move through spaces, and tap product tags to open catalogs.</p>
+            </div>
+        </section>
 
-<script>
-pannellum.viewer('panorama', {
-    "type": "equirectangular",
-    "panorama": "https://pannellum.org/images/alma.jpg",
-    "autoLoad": true
-});
-</script>
+        <section class="showroom-tour-section">
+            <div class="showroom-shell showroom-tour-layout">
+                <div class="showroom-tour-frame">
+                    <div id="panorama" class="showroom-panorama" aria-label="360 degree showroom viewer"></div>
+                </div>
+                <aside class="showroom-help-card">
+                    <h2>How to Explore</h2>
+                    <ul>
+                        <li>Drag left or right to rotate view.</li>
+                        <li>Use arrow hotspots to move to another room.</li>
+                        <li>Select product tags to open related catalog pages.</li>
+                    </ul>
+                    <div class="showroom-actions">
+                        <a class="showroom-action-button" href="products.html">Browse All Products</a>
+                        <a class="showroom-action-button showroom-action-button--ghost" href="chairs.html">Open Chairs Catalog</a>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.pannellum.org/2.5/pannellum.js"></script>
+    <script src="js/showroom.js"></script>
 </body>
 </html>
