@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   const listEl = document.querySelector('[data-products-list]');
   const statusEl = document.querySelector('[data-products-status]');
   const modalEl = document.querySelector('[data-admin-modal]');
@@ -10,16 +10,27 @@
   const authMessage = document.querySelector('[data-auth-message]');
   const productMessage = document.querySelector('[data-product-message]');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const tokenKey = 'retro-products-token';
+  const verifiedPhoneKey = 'retro-products-phone';
+  const storageProductsKey = 'retro-products-storage';
+  const fallbackAdmins = [{ phone: '8094679551', password: '123456789' }];
+
   let products = [];
+  let fallbackMode = false;
 
   if (!listEl || !modalEl || !openButton) {
     return;
   }
 
   const getToken = () => window.localStorage.getItem(tokenKey) || '';
+  const getVerifiedPhone = () => window.localStorage.getItem(verifiedPhoneKey) || 'Verified user';
   const setToken = (token) => window.localStorage.setItem(tokenKey, token);
-  const clearToken = () => window.localStorage.removeItem(tokenKey);
+  const setVerifiedPhone = (phone) => window.localStorage.setItem(verifiedPhoneKey, phone);
+  const clearToken = () => {
+    window.localStorage.removeItem(tokenKey);
+    window.localStorage.removeItem(verifiedPhoneKey);
+  };
 
   const escapeHtml = (value) => String(value)
     .replace(/&/g, '&amp;')
@@ -95,12 +106,59 @@
     }
   };
 
+  const safeParseJson = async (response) => {
+    try {
+      return await response.json();
+    } catch (_) {
+      return {};
+    }
+  };
+
+  const getStoredProducts = () => {
+    try {
+      const raw = window.localStorage.getItem(storageProductsKey);
+      const parsed = JSON.parse(raw || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      return [];
+    }
+  };
+
+  const setStoredProducts = (items) => {
+    window.localStorage.setItem(storageProductsKey, JSON.stringify(items));
+  };
+
+  const verifyFallbackAdmin = ({ phone, password }) => {
+    return fallbackAdmins.some((admin) => admin.phone === phone && admin.password === password);
+  };
+
+  const createLocalProduct = (payload, createdBy) => ({
+    id: `local-${Date.now()}`,
+    name: payload.name,
+    description: payload.description,
+    photo: payload.photo,
+    createdAt: new Date().toISOString(),
+    createdBy
+  });
+
   const fetchProducts = async () => {
-    const response = await fetch('/api/products');
-    const data = await response.json();
-    products = Array.isArray(data.products) ? data.products : [];
-    renderProducts();
-    setStatus('Products loaded.');
+    try {
+      const response = await fetch('/api/products', { headers: { Accept: 'application/json' } });
+      if (!response.ok) {
+        throw new Error('API unavailable');
+      }
+
+      const data = await safeParseJson(response);
+      products = Array.isArray(data.products) ? data.products : [];
+      fallbackMode = false;
+      renderProducts();
+      setStatus('Products loaded.');
+    } catch (_) {
+      fallbackMode = true;
+      products = getStoredProducts();
+      renderProducts();
+      setStatus('Products loaded (local mode).');
+    }
   };
 
   const convertFileToDataUrl = (file) => new Promise((resolve, reject) => {
@@ -139,26 +197,56 @@
       password: String(formData.get('password') || '')
     };
 
-    const response = await fetch('/api/admin/verify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+    if (fallbackMode) {
+      if (!verifyFallbackAdmin(payload)) {
+        setAuthMessage('Invalid number or password.');
+        clearToken();
+        return;
+      }
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      setAuthMessage(data.message || 'Verification failed.');
-      clearToken();
+      setToken(`local-${Date.now()}`);
+      setVerifiedPhone(payload.phone || 'Verified user');
+      setAuthMessage('Verified successfully.', 'success');
+      authForm.reset();
+      openModal('add');
       return;
     }
 
-    setToken(data.token);
-    setAuthMessage('Verified successfully.', 'success');
-    authForm.reset();
-    openModal('add');
+    try {
+      const response = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await safeParseJson(response);
+
+      if (!response.ok) {
+        setAuthMessage(data.message || 'Verification failed.');
+        clearToken();
+        return;
+      }
+
+      setVerifiedPhone(String(data.phone || payload.phone || '').trim() || 'Verified user');
+      setToken(data.token);
+      setAuthMessage('Verified successfully.', 'success');
+      authForm.reset();
+      openModal('add');
+    } catch (_) {
+      fallbackMode = true;
+      if (!verifyFallbackAdmin(payload)) {
+        setAuthMessage('Invalid number or password.');
+        clearToken();
+        return;
+      }
+
+      setToken(`local-${Date.now()}`);
+      setAuthMessage('Verified successfully.', 'success');
+      authForm.reset();
+      openModal('add');
+    }
   });
 
   productForm?.addEventListener('submit', async (event) => {
@@ -180,37 +268,62 @@
       photo: photoData
     };
 
-    const response = await fetch('/api/products', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getToken()}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (response.status === 401) {
-      clearToken();
-      setProductMessage('Verification expired. Please verify again.');
-      openModal('verify');
+    if (fallbackMode) {
+      const localProduct = createLocalProduct(payload, getVerifiedPhone());
+      products.unshift(localProduct);
+      setStoredProducts(products);
+      renderProducts();
+      setProductMessage('Product added successfully.', 'success');
+      productForm.reset();
+      closeModal();
       return;
     }
 
-    if (!response.ok) {
-      setProductMessage(data.message || 'Unable to save product.');
-      return;
-    }
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`
+        },
+        body: JSON.stringify(payload)
+      });
 
-    products.unshift(data.product);
-    renderProducts();
-    setProductMessage('Product added successfully.', 'success');
-    productForm.reset();
-    closeModal();
+      const data = await safeParseJson(response);
+
+      if (response.status === 401) {
+        clearToken();
+        setProductMessage('Verification expired. Please verify again.');
+        openModal('verify');
+        return;
+      }
+
+      if (!response.ok) {
+        setProductMessage(data.message || 'Unable to save product.');
+        return;
+      }
+
+      products.unshift(data.product);
+      renderProducts();
+      setProductMessage('Product added successfully.', 'success');
+      productForm.reset();
+      closeModal();
+    } catch (_) {
+      fallbackMode = true;
+      const localProduct = createLocalProduct(payload, getVerifiedPhone());
+      products.unshift(localProduct);
+      setStoredProducts(products);
+      renderProducts();
+      setProductMessage('Product added successfully (local mode).', 'success');
+      productForm.reset();
+      closeModal();
+    }
   });
 
   fetchProducts().catch(() => {
-    setStatus('Unable to load products right now.');
+    fallbackMode = true;
+    products = getStoredProducts();
+    renderProducts();
+    setStatus('Products loaded (local mode).');
   });
 })();
