@@ -243,6 +243,7 @@
       }
 
       setToken(`local-${Date.now()}`);
+      setVerifiedPhone(payload.phone || 'Verified user');
       setAuthMessage('Verified successfully.', 'success');
       authForm.reset();
       openModal('add');
