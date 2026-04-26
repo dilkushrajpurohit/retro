@@ -446,22 +446,42 @@
 
       .side {
         flex-direction: column;
+        overflow: hidden;
       }
 
       .page-half {
         width: 100%;
+        min-height: 0;
       }
 
       .left {
-        min-height: 220px;
+        min-height: 180px;
+        height: 44%;
+        padding: 14px;
       }
 
       .right {
-        padding: 22px;
+        height: 56%;
+        padding: 18px;
+        gap: 8px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       .book {
-        height: clamp(450px, 68vh, 700px);
+        height: clamp(520px, 76vh, 740px);
+      }
+
+      .book::before {
+        display: none;
+      }
+
+      .right h2 {
+        font-size: clamp(1.32rem, 4.6vw, 1.9rem);
+      }
+
+      .right p {
+        line-height: 1.55;
       }
     }
 
@@ -483,12 +503,73 @@
         padding-top: 20px;
       }
 
+      .catalog-stage-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .catalog-page-indicator {
+        min-width: 0;
+        text-align: left;
+      }
+
       .flipbook-container {
         padding: 12px;
       }
 
       .book {
-        height: 560px;
+        height: 70vh;
+        min-height: 520px;
+        max-height: 660px;
+      }
+
+      .left {
+        height: 42%;
+      }
+
+      .left img {
+        border-radius: 12px;
+      }
+
+      .right {
+        height: 58%;
+        padding: 14px;
+      }
+
+      .item-price {
+        font-size: 1.02rem;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .catalog-shell {
+        width: calc(100% - 16px);
+      }
+
+      .book {
+        min-height: 500px;
+      }
+
+      .left {
+        height: 39%;
+        min-height: 150px;
+      }
+
+      .right {
+        height: 61%;
+        padding: 12px;
+      }
+
+      .right h2 {
+        font-size: 1.2rem;
+      }
+
+      .right p {
+        font-size: 0.92rem;
+      }
+
+      .item-price {
+        font-size: 0.96rem;
       }
     }
   </style>
