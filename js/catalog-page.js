@@ -14,6 +14,10 @@
   const itemMessageEl = document.querySelector('[data-catalog-item-message]');
   const closeTargets = document.querySelectorAll('[data-close-catalog-modal]');
   const tokenKey = 'retro-products-token';
+  const verifiedPhoneKey = 'retro-catalog-phone';
+  const storageItemsKey = 'retro-catalog-items-storage';
+  const fallbackAdmins = [{ phone: '8094679551', password: '123456789' }];
+  const localCatalogAccessKey = 'retro-catalog-pin-ok';
 
   if (!bookEl || !prevButton || !nextButton || !openAddButton || !modalEl) {
     return;
@@ -21,10 +25,16 @@
 
   let items = [];
   let current = 0;
+  let fallbackMode = false;
 
   const getToken = () => window.localStorage.getItem(tokenKey) || '';
+  const getVerifiedPhone = () => window.localStorage.getItem(verifiedPhoneKey) || 'Verified user';
   const setToken = (token) => window.localStorage.setItem(tokenKey, token);
-  const clearToken = () => window.localStorage.removeItem(tokenKey);
+  const setVerifiedPhone = (phone) => window.localStorage.setItem(verifiedPhoneKey, phone);
+  const clearToken = () => {
+    window.localStorage.removeItem(tokenKey);
+    window.localStorage.removeItem(verifiedPhoneKey);
+  };
 
   const escapeHtml = (value) => String(value)
     .replace(/&/g, '&amp;')
@@ -168,11 +178,65 @@
     reader.readAsDataURL(file);
   });
 
+  const safeParseJson = async (response) => {
+    try {
+      return await response.json();
+    } catch (_) {
+      return {};
+    }
+  };
+
+  const getStoredItems = () => {
+    try {
+      const raw = window.localStorage.getItem(storageItemsKey);
+      const parsed = JSON.parse(raw || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) {
+      return [];
+    }
+  };
+
+  const setStoredItems = (nextItems) => {
+    window.localStorage.setItem(storageItemsKey, JSON.stringify(nextItems));
+  };
+
+  const verifyFallbackAdmin = ({ phone, password }) => fallbackAdmins
+    .some((entry) => entry.phone === phone && entry.password === password);
+
+  const createLocalItem = (payload, createdBy) => ({
+    id: `local-item-${Date.now()}`,
+    name: payload.name,
+    description: payload.description,
+    price: payload.price,
+    photo: payload.photo,
+    createdAt: new Date().toISOString(),
+    createdBy
+  });
+
   const loadItems = async () => {
     setStatus('Loading catalog...');
-    const response = await fetch('/api/catalog-items');
-    const data = await response.json();
-    items = Array.isArray(data.items) ? data.items : [];
+
+    try {
+      const response = await fetch('/api/catalog-items', { headers: { Accept: 'application/json' } });
+      if (!response.ok) {
+        throw new Error('Catalog API unavailable');
+      }
+
+      const data = await safeParseJson(response);
+      items = Array.isArray(data.items) ? data.items : [];
+      fallbackMode = false;
+    } catch (_) {
+      fallbackMode = true;
+
+      if (!window.localStorage.getItem(localCatalogAccessKey)) {
+        window.location.href = 'catalog-access.html';
+        return;
+      }
+
+      items = getStoredItems();
+      setStatus('Catalog loaded (local mode).');
+    }
+
     current = 0;
     renderBook();
   };
@@ -201,25 +265,58 @@
       password: String(formData.get('password') || '')
     };
 
-    const response = await fetch('/api/admin/verify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+    if (fallbackMode) {
+      if (!verifyFallbackAdmin(payload)) {
+        clearToken();
+        setAuthMessage('Invalid number or password.');
+        return;
+      }
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      clearToken();
-      setAuthMessage(data.message || 'Access denied.');
+      setToken(`local-catalog-${Date.now()}`);
+      setVerifiedPhone(payload.phone || 'Verified user');
+      setAuthMessage('Verified successfully.', 'success');
+      authForm.reset();
+      openModal('add');
       return;
     }
 
-    setToken(data.token);
-    authForm.reset();
-    openModal('add');
+    try {
+      const response = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await safeParseJson(response);
+
+      if (!response.ok) {
+        clearToken();
+        setAuthMessage(data.message || 'Access denied.');
+        return;
+      }
+
+      setToken(data.token);
+      setVerifiedPhone(String(data.phone || payload.phone || '').trim() || 'Verified user');
+      setAuthMessage('Verified successfully.', 'success');
+      authForm.reset();
+      openModal('add');
+    } catch (_) {
+      fallbackMode = true;
+
+      if (!verifyFallbackAdmin(payload)) {
+        clearToken();
+        setAuthMessage('Invalid number or password.');
+        return;
+      }
+
+      setToken(`local-catalog-${Date.now()}`);
+      setVerifiedPhone(payload.phone || 'Verified user');
+      setAuthMessage('Verified successfully.', 'success');
+      authForm.reset();
+      openModal('add');
+    }
   });
 
   itemForm?.addEventListener('submit', async (event) => {
@@ -241,38 +338,72 @@
       photo: await fileToDataUrl(photoFile)
     };
 
-    const response = await fetch('/api/catalog-items', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getToken()}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    if (response.status === 401) {
-      clearToken();
-      setItemMessage('Session expired. Verify again.');
-      openModal('verify');
+    if (fallbackMode) {
+      const localItem = createLocalItem(payload, getVerifiedPhone());
+      items.unshift(localItem);
+      setStoredItems(items);
+      itemForm.reset();
+      setItemMessage('Item added to catalog.', 'success');
+      current = 0;
+      renderBook();
+      closeModal();
       return;
     }
 
-    if (!response.ok) {
-      setItemMessage(data.message || 'Unable to add item.');
-      return;
-    }
+    try {
+      const response = await fetch('/api/catalog-items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`
+        },
+        body: JSON.stringify(payload)
+      });
 
-    itemForm.reset();
-    setItemMessage('Item added to catalog.', 'success');
-    items.unshift(data.item);
-    current = 0;
-    renderBook();
-    closeModal();
+      const data = await safeParseJson(response);
+
+      if (response.status === 401) {
+        clearToken();
+        setItemMessage('Session expired. Verify again.');
+        openModal('verify');
+        return;
+      }
+
+      if (!response.ok) {
+        setItemMessage(data.message || 'Unable to add item.');
+        return;
+      }
+
+      itemForm.reset();
+      setItemMessage('Item added to catalog.', 'success');
+      items.unshift(data.item);
+      current = 0;
+      renderBook();
+      closeModal();
+    } catch (_) {
+      fallbackMode = true;
+      const localItem = createLocalItem(payload, getVerifiedPhone());
+      items.unshift(localItem);
+      setStoredItems(items);
+      itemForm.reset();
+      setItemMessage('Item added to catalog (local mode).', 'success');
+      current = 0;
+      renderBook();
+      closeModal();
+    }
   });
 
   loadItems().catch(() => {
-    setStatus('Unable to load catalog items right now.');
+    fallbackMode = true;
+
+    if (!window.localStorage.getItem(localCatalogAccessKey)) {
+      window.location.href = 'catalog-access.html';
+      return;
+    }
+
+    items = getStoredItems();
+    current = 0;
+    renderBook();
+    setStatus('Catalog loaded (local mode).');
   });
 })();
