@@ -2,6 +2,10 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const express = require('express');
+const dotenv = require('dotenv');
+const admin = require('firebase-admin');
+
+dotenv.config();
 
 const rootDir = __dirname;
 const port = Number(process.env.PORT) || 3000;
@@ -9,9 +13,14 @@ const dataDir = path.join(rootDir, 'data');
 const productsFile = path.join(dataDir, 'products.json');
 const catalogItemsFile = path.join(dataDir, 'catalog-items.json');
 const adminsFile = path.join(dataDir, 'admins.json');
+const flipbooksFile = path.join(dataDir, 'flipbooks.json');
+const firebaseServiceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH
+  || path.join(rootDir, 'firebase-service.json');
 const accessTokens = new Map();
 const catalogAccessTokens = new Map();
 const catalogPin = '12345';
+
+let firestoreDb = null;
 
 const app = express();
 
@@ -36,6 +45,104 @@ const readJsonFile = async (filePath, fallbackValue) => {
 
 const writeJsonFile = async (filePath, value) => {
   await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+};
+
+const fileExists = async (filePath) => {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+const loadFirebaseServiceAccount = async () => {
+  const inlineJson = String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
+  if (inlineJson) {
+    const parsed = JSON.parse(inlineJson);
+    if (process.env.FIREBASE_PRIVATE_KEY) {
+      parsed.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
+    }
+    return parsed;
+  }
+
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON_B64) {
+    try {
+      const decoded = Buffer.from(String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON_B64), 'base64').toString('utf8');
+      const parsed = JSON.parse(decoded);
+      if (process.env.FIREBASE_PRIVATE_KEY) {
+        parsed.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
+      }
+      return parsed;
+    } catch (err) {
+      // fallthrough to file-based loading
+    }
+  }
+
+  if (await fileExists(firebaseServiceAccountPath)) {
+    const file = await readJsonFile(firebaseServiceAccountPath, null);
+    if (file && process.env.FIREBASE_PRIVATE_KEY) {
+      file.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
+    }
+    return file;
+  }
+
+  return null;
+};
+
+const initializeFirebase = async () => {
+  try {
+    const serviceAccount = await loadFirebaseServiceAccount();
+console.log("👉 Expected path:", firebaseServiceAccountPath);
+
+console.log("👉 Loaded service account:", serviceAccount ? "YES" : "NO");
+    if (!serviceAccount || !serviceAccount.project_id || !serviceAccount.client_email || !serviceAccount.private_key) {
+      return false;
+    }
+
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: serviceAccount.project_id,
+          clientEmail: serviceAccount.client_email,
+          privateKey: serviceAccount.private_key.replace(/\\n/g, '\n')
+        })
+      });
+    }
+
+    firestoreDb = admin.firestore();
+    return true;
+  } catch (error) {
+    console.warn('Firebase initialization failed, continuing with local JSON storage:', error.message);
+    firestoreDb = null;
+    return false;
+  }
+};
+
+const isFirebaseReady = () => Boolean(firestoreDb);
+
+const mapFirestoreDocs = (snapshot) => snapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data()
+}));
+
+const getFirebaseCollection = async (collectionName) => {
+  const snapshot = await firestoreDb.collection(collectionName).orderBy('createdAt', 'desc').get();
+  return mapFirestoreDocs(snapshot);
+};
+
+const createFirebaseDocument = async (collectionName, payload) => {
+  const createdAt = new Date().toISOString();
+  const docRef = await firestoreDb.collection(collectionName).add({
+    ...payload,
+    createdAt
+  });
+
+  return {
+    id: docRef.id,
+    ...payload,
+    createdAt
+  };
 };
 
 const seedProducts = [
@@ -143,6 +250,20 @@ const saveCatalogItems = async (items) => {
   await writeJsonFile(catalogItemsFile, items);
 };
 
+const getStoredFlipbooks = async () => {
+  const flipbooks = await readJsonFile(flipbooksFile, null);
+  if (Array.isArray(flipbooks) && flipbooks.length > 0) {
+    return flipbooks;
+  }
+
+  await writeJsonFile(flipbooksFile, []);
+  return [];
+};
+
+const saveFlipbooks = async (flipbooks) => {
+  await writeJsonFile(flipbooksFile, flipbooks);
+};
+
 const requireVerifiedToken = (req, res, next) => {
   const authHeader = req.get('Authorization') || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
@@ -179,13 +300,35 @@ const hasCatalogAccess = (req) => {
 };
 
 app.get('/api/products', async (_, res) => {
-  const products = await getStoredProducts();
-  res.json({ products });
+  try {
+    if (isFirebaseReady()) {
+      const products = await getFirebaseCollection('products');
+      res.json({ products });
+      return;
+    }
+
+    const products = await getStoredProducts();
+    res.json({ products });
+  } catch (error) {
+    console.error('Error in GET /api/products:', error);
+    res.status(500).json({ message: 'Failed to load products.' });
+  }
 });
 
 app.get('/api/catalog-items', async (_, res) => {
-  const items = await getStoredCatalogItems();
-  res.json({ items });
+  try {
+    if (isFirebaseReady()) {
+      const items = await getFirebaseCollection('catalogItems');
+      res.json({ items });
+      return;
+    }
+
+    const items = await getStoredCatalogItems();
+    res.json({ items });
+  } catch (error) {
+    console.error('Error in GET /api/catalog-items:', error);
+    res.status(500).json({ message: 'Failed to load catalog items.' });
+  }
 });
 
 app.post('/api/admin/verify', async (req, res) => {
@@ -222,20 +365,37 @@ app.post('/api/products', requireVerifiedToken, async (req, res) => {
     return;
   }
 
-  const products = await getStoredProducts();
-  const product = {
-    id: crypto.randomUUID(),
-    name,
-    description,
-    photo,
-    createdAt: new Date().toISOString(),
-    createdBy: req.adminSession.phone
-  };
+  try {
+    if (isFirebaseReady()) {
+      const product = await createFirebaseDocument('products', {
+        name,
+        description,
+        photo,
+        createdBy: req.adminSession.phone
+      });
 
-  products.unshift(product);
-  await saveProducts(products);
+      res.status(201).json({ product });
+      return;
+    }
 
-  res.status(201).json({ product });
+    const products = await getStoredProducts();
+    const product = {
+      id: crypto.randomUUID(),
+      name,
+      description,
+      photo,
+      createdAt: new Date().toISOString(),
+      createdBy: req.adminSession.phone
+    };
+
+    products.unshift(product);
+    await saveProducts(products);
+
+    res.status(201).json({ product });
+  } catch (error) {
+    console.error('Error in POST /api/products:', error);
+    res.status(500).json({ message: 'Failed to save product.' });
+  }
 });
 
 app.post('/api/catalog-items', requireVerifiedToken, async (req, res) => {
@@ -249,21 +409,101 @@ app.post('/api/catalog-items', requireVerifiedToken, async (req, res) => {
     return;
   }
 
-  const items = await getStoredCatalogItems();
-  const item = {
-    id: crypto.randomUUID(),
-    name,
-    description,
-    price,
-    photo,
-    createdAt: new Date().toISOString(),
-    createdBy: req.adminSession.phone
-  };
+  try {
+    if (isFirebaseReady()) {
+      const item = await createFirebaseDocument('catalogItems', {
+        name,
+        description,
+        price,
+        photo,
+        createdBy: req.adminSession.phone
+      });
 
-  items.unshift(item);
-  await saveCatalogItems(items);
+      res.status(201).json({ item });
+      return;
+    }
 
-  res.status(201).json({ item });
+    const items = await getStoredCatalogItems();
+    const item = {
+      id: crypto.randomUUID(),
+      name,
+      description,
+      price,
+      photo,
+      createdAt: new Date().toISOString(),
+      createdBy: req.adminSession.phone
+    };
+
+    items.unshift(item);
+    await saveCatalogItems(items);
+
+    res.status(201).json({ item });
+  } catch (error) {
+    console.error('Error in POST /api/catalog-items:', error);
+    res.status(500).json({ message: 'Failed to save catalog item.' });
+  }
+});
+
+app.get('/api/flipbooks', async (_, res) => {
+  try {
+    if (isFirebaseReady()) {
+      const flipbooks = await getFirebaseCollection('flipbooks');
+      res.json({ flipbooks });
+      return;
+    }
+
+    const flipbooks = await getStoredFlipbooks();
+    res.json({ flipbooks });
+  } catch (error) {
+    console.error('Error in GET /api/flipbooks:', error);
+    res.status(500).json({ message: 'Failed to load flipbooks.' });
+  }
+});
+
+app.post('/api/flipbooks', requireVerifiedToken, async (req, res) => {
+  const title = String(req.body?.title || '').trim();
+  const description = String(req.body?.description || '').trim();
+  const coverImage = String(req.body?.coverImage || '').trim();
+  const pages = Array.isArray(req.body?.pages) ? req.body.pages : [];
+
+  if (!title) {
+    res.status(400).json({ message: 'Flipbook title is required.' });
+    return;
+  }
+
+  try {
+    if (isFirebaseReady()) {
+      const flipbook = await createFirebaseDocument('flipbooks', {
+        title,
+        description,
+        coverImage,
+        pages,
+        createdBy: req.adminSession.phone
+      });
+
+      res.status(201).json({ flipbook });
+      return;
+    }
+
+    const flipbooks = await getStoredFlipbooks();
+    const flipbook = {
+      id: crypto.randomUUID(),
+      title,
+      description,
+      coverImage,
+      pages,
+      createdAt: new Date().toISOString(),
+      createdBy: req.adminSession.phone
+    };
+
+    flipbooks.unshift(flipbook);
+    await saveFlipbooks(flipbooks);
+
+    res.status(201).json({ flipbook });
+  } catch (error) {
+    console.error('Error in POST /api/flipbooks:', error);
+    res.status(500).json({ message: 'Failed to save flipbook.' });
+  }
 });
 
 app.post('/api/catalog/verify-pin', (req, res) => {
@@ -338,6 +578,7 @@ const initializeStore = async () => {
   await ensureDataDir();
   await getStoredProducts();
   await getStoredCatalogItems();
+  await getStoredFlipbooks();
   await writeJsonFile(
     adminsFile,
     await readJsonFile(adminsFile, {
@@ -347,12 +588,62 @@ const initializeStore = async () => {
   );
 };
 
+const migrateLocalDataToFirestore = async () => {
+  if (!isFirebaseReady()) return { migrated: 0 };
+
+  const results = { products: 0, catalogItems: 0, flipbooks: 0 };
+
+  const uploadArray = async (collectionName, localFile) => {
+    try {
+      const items = await readJsonFile(localFile, null);
+      if (!Array.isArray(items) || items.length === 0) return 0;
+
+      for (const item of items) {
+        const docId = item && item.id ? String(item.id) : null;
+        const payload = { ...item };
+        if (payload.id) delete payload.id;
+
+        if (docId) {
+          await firestoreDb.collection(collectionName).doc(docId).set(payload, { merge: true });
+        } else {
+          await firestoreDb.collection(collectionName).add(payload);
+        }
+      }
+
+      return items.length;
+    } catch (err) {
+      console.warn(`Failed to migrate ${collectionName}:`, err.message);
+      return 0;
+    }
+  };
+
+  results.products = await uploadArray('products', productsFile);
+  results.catalogItems = await uploadArray('catalogItems', catalogItemsFile);
+  results.flipbooks = await uploadArray('flipbooks', flipbooksFile);
+
+  return results;
+};
+
 app.use((_, res) => {
   res.status(404).send('Not found');
 });
 
 initializeStore()
-  .then(() => {
+  .then(async () => {
+    const firebaseConnected = await initializeFirebase();
+
+    if (firebaseConnected) {
+      console.log('Firebase connected');
+      try {
+        const migrated = await migrateLocalDataToFirestore();
+        console.log('Local -> Firestore migration results:', migrated);
+      } catch (err) {
+        console.warn('Migration failed:', err.message || err);
+      }
+    } else {
+      console.warn('Firebase not configured, continuing with local JSON storage.');
+    }
+
     app.listen(port, () => {
       console.log(`Retro INC server running at http://localhost:${port}`);
     });

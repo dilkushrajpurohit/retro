@@ -1,24 +1,24 @@
 const videos = Array.from(document.querySelectorAll(".hero-video-layer"));
-const navDock = document.querySelector(".hero-nav-dock");
-const navItems = Array.from(document.querySelectorAll(".hero-nav-bottom .nav-item[data-video-target]"));
-const panels = Array.from(document.querySelectorAll(".mega-panel[data-panel]"));
+const heroWrapper = document.querySelector(".hero-wrapper");
+const heroStageShell = document.querySelector(".hero-stage-shell");
+const heroSidebar = document.querySelector(".hero-sidebar");
+const heroSubmenu = document.querySelector("[data-hero-submenu]");
+const heroCursor = document.querySelector("[data-hero-cursor]");
+const heroNavItems = Array.from(document.querySelectorAll(".hero-nav-vertical .nav-item[data-hero-target]"));
 const showcaseSection = document.querySelector("#craft-showcase");
 const menuToggle = document.querySelector("[data-hero-menu-toggle]");
 const mobileMenu = document.querySelector("[data-hero-mobile-menu]");
 const mobileMenuCloseTargets = Array.from(document.querySelectorAll("[data-hero-mobile-menu-close]"));
 const mobileMenuLinks = Array.from(document.querySelectorAll(".hero-mobile-link[data-video-target]"));
-const isCompactViewport = window.matchMedia("(max-width: 760px)").matches;
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const hasFinePointer = window.matchMedia("(pointer: fine)").matches;
 
-if (videos.length > 0) {
-  const SWITCH_DELAY_MS = prefersReducedMotion ? 0 : 130;
-  const PANEL_HIDE_DELAY_MS = 100;
+if (videos.length > 0 && heroWrapper) {
   const activeClass = "is-active";
-  const openPanelClass = "is-open";
+  const SWITCH_DELAY_MS = prefersReducedMotion ? 0 : 110;
   let activeKey = "default";
-  let activePanelKey = null;
   let switchTimer = null;
-  let panelHideTimer = null;
+  let submenuTimer = null;
 
   const videoMap = videos.reduce((acc, video) => {
     const key = video.dataset.video;
@@ -28,22 +28,86 @@ if (videos.length > 0) {
     return acc;
   }, {});
 
-  const panelMap = panels.reduce((acc, panel) => {
-    const key = panel.dataset.panel;
-    if (key) {
-      acc[key] = panel;
+  const submenuData = {
+    default: {
+      kicker: "Craft story",
+      title: "Material stories with a cinematic finish.",
+      copy:
+        "Explore reclaimed wood, custom interiors, and premium accessories through a slower, more tactile lens.",
+      metrics: [
+        { value: "11+", label: "Years building spaces" },
+        { value: "30+", label: "Countries reached" }
+      ],
+      action: "Schedule a consult"
+    },
+    about: {
+      kicker: "Inside Retro",
+      title: "A studio shaped by grain, light, and precision.",
+      copy:
+        "See how the team balances reclaimed character with a disciplined, premium interior language.",
+      metrics: [
+        { value: "Story-led", label: "Design approach" },
+        { value: "Made to fit", label: "Custom detailing" }
+      ],
+      action: "Meet the team"
+    },
+    contact: {
+      kicker: "Start here",
+      title: "Book a consult and define the space.",
+      copy:
+        "Talk through measurements, materials, timelines, and visual direction with the studio.",
+      metrics: [
+        { value: "Fast", label: "Response window" },
+        { value: "Personal", label: "Project guidance" }
+      ],
+      action: "Open contact"
+    },
+    projects: {
+      kicker: "Selected work",
+      title: "Retail, residential, and hospitality stories.",
+      copy:
+        "Browse projects that blend bold atmosphere with warm, material-driven execution.",
+      metrics: [
+        { value: "Retail", label: "Mood setting" },
+        { value: "Residential", label: "Comfort focus" }
+      ],
+      action: "View projects"
+    },
+    showroom: {
+      kicker: "Immersive view",
+      title: "Walk the showroom before you arrive.",
+      copy:
+        "Use the virtual showroom to preview the tactile mix of wood, texture, and tailored furniture.",
+      metrics: [
+        { value: "Virtual", label: "Preview experience" },
+        { value: "Spatial", label: "Product context" }
+      ],
+      action: "Enter showroom"
+    },
+    products: {
+      kicker: "Collections",
+      title: "Furniture and accessories with a premium edge.",
+      copy:
+        "Move through chairs, tables, and decorative pieces with the same cinematic treatment.",
+      metrics: [
+        { value: "Chairs", label: "Featured range" },
+        { value: "Tables", label: "Anchor pieces" }
+      ],
+      action: "Browse products"
     }
-    return acc;
-  }, {});
+  };
 
   const safePlay = (video) => {
     if (!video) {
       return;
     }
 
-    video.play().catch(() => {
-      // Autoplay may be delayed until user interaction.
-    });
+    const playResult = video.play();
+    if (playResult && typeof playResult.catch === "function") {
+      playResult.catch(() => {
+        // Autoplay can still be deferred until a user gesture.
+      });
+    }
   };
 
   const setMenuState = (isOpen) => {
@@ -56,128 +120,227 @@ if (videos.length > 0) {
     document.body.classList.toggle("menu-open", isOpen);
   };
 
-  const openMenu = () => setMenuState(true);
   const closeMenu = () => setMenuState(false);
+  const openMenu = () => setMenuState(true);
 
-  const switchTo = (nextKey) => {
-    if (!videoMap[nextKey] || nextKey === activeKey) {
+  const setActiveNavItem = (key) => {
+    heroNavItems.forEach((item) => {
+      item.classList.toggle("is-active", item.dataset.heroTarget === key);
+    });
+  };
+
+  const renderSubmenu = (key) => {
+    if (!heroSubmenu) {
       return;
     }
 
-    const currentVideo = videoMap[activeKey];
-    const nextVideo = videoMap[nextKey];
+    const data = submenuData[key] || submenuData.default;
+    const metricMarkup = data.metrics
+      .map(
+        (metric) => `
+          <div>
+            <span>${metric.value}</span>
+            <small>${metric.label}</small>
+          </div>
+        `
+      )
+      .join("");
 
-    if (nextVideo) {
-      nextVideo.currentTime = 0;
-      safePlay(nextVideo);
-      nextVideo.classList.add(activeClass);
+    heroSubmenu.innerHTML = `
+      <p class="hero-submenu-kicker">${data.kicker}</p>
+      <h3 class="hero-submenu-title">${data.title}</h3>
+      <p class="hero-submenu-copy">${data.copy}</p>
+      <div class="hero-submenu-metrics">${metricMarkup}</div>
+      <a class="hero-secondary hero-submenu-link" href="contact.html">${data.action}</a>
+    `;
+
+    if (window.gsap && !prefersReducedMotion) {
+      const elements = Array.from(heroSubmenu.children);
+      window.gsap.fromTo(
+        elements,
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.45, stagger: 0.045, ease: "power2.out" }
+      );
     }
-
-    if (currentVideo && currentVideo !== nextVideo) {
-      currentVideo.classList.remove(activeClass);
-    }
-
-    activeKey = nextKey;
   };
 
-  const queueSwitch = (nextKey) => {
+  const switchVideo = (nextKey, immediate = false) => {
+    const nextVideo = videoMap[nextKey] || videoMap.default;
+    const currentVideo = videoMap[activeKey] || videoMap.default;
+
+    if (!nextVideo || nextKey === activeKey) {
+      setActiveNavItem(nextKey || activeKey);
+      return;
+    }
+
     if (switchTimer) {
       window.clearTimeout(switchTimer);
+      switchTimer = null;
     }
 
-    switchTimer = window.setTimeout(() => {
-      switchTo(nextKey);
-    }, SWITCH_DELAY_MS);
-  };
+    const runSwitch = () => {
+      const previousKey = activeKey;
+      const previousVideo = videoMap[previousKey] || videoMap.default;
 
-  const clearPanelHide = () => {
-    if (panelHideTimer) {
-      window.clearTimeout(panelHideTimer);
-      panelHideTimer = null;
-    }
-  };
+      nextVideo.currentTime = 0;
+      nextVideo.classList.add(activeClass);
+      safePlay(nextVideo);
 
-  const closePanels = () => {
-    panels.forEach((panel) => {
-      panel.classList.remove(openPanelClass);
-      panel.style.removeProperty("left");
-      panel.style.removeProperty("--parallax-x");
-    });
-    activePanelKey = null;
-  };
+      if (window.gsap) {
+        window.gsap.killTweensOf([previousVideo, nextVideo]);
+        const timeline = window.gsap.timeline({ defaults: { overwrite: true } });
 
-  const queueClosePanels = () => {
-    clearPanelHide();
-    panelHideTimer = window.setTimeout(() => {
-      closePanels();
-    }, PANEL_HIDE_DELAY_MS);
-  };
+        timeline.set(nextVideo, { opacity: 0, scale: 1.06, zIndex: 2 });
+        if (previousVideo && previousVideo !== nextVideo) {
+          timeline.set(previousVideo, { zIndex: 1 });
+        }
 
-  const centerPanelToItem = (panel, item) => {
-    if (!panel || !item || !navDock) {
-      return;
-    }
+        timeline.to(nextVideo, { opacity: 1, scale: 1, duration: prefersReducedMotion ? 0 : 0.95, ease: "power3.out" }, 0);
 
-    const itemRect = item.getBoundingClientRect();
-    const dockRect = navDock.getBoundingClientRect();
-    const centerX = itemRect.left - dockRect.left + itemRect.width / 2;
-    panel.style.left = `${centerX}px`;
-  };
+        if (previousVideo && previousVideo !== nextVideo) {
+          timeline.to(previousVideo, { opacity: 0, scale: 1.03, duration: prefersReducedMotion ? 0 : 0.72, ease: "power2.inOut" }, 0);
+        }
 
-  const openPanel = (panelKey, item) => {
-    clearPanelHide();
+        timeline.add(() => {
+          if (previousVideo && previousVideo !== nextVideo) {
+            previousVideo.classList.remove(activeClass);
+            previousVideo.pause();
+          }
 
-    if (!panelKey || !panelMap[panelKey]) {
-      closePanels();
-      return;
-    }
-
-    const targetPanel = panelMap[panelKey];
-    centerPanelToItem(targetPanel, item);
-
-    panels.forEach((panel) => {
-      if (panel === targetPanel) {
-        panel.classList.add(openPanelClass);
+          activeKey = nextKey;
+          setActiveNavItem(nextKey);
+          renderSubmenu(nextKey);
+        }, prefersReducedMotion ? 0 : 0.12);
       } else {
-        panel.classList.remove(openPanelClass);
-      }
-    });
+        if (previousVideo && previousVideo !== nextVideo) {
+          previousVideo.classList.remove(activeClass);
+          previousVideo.pause();
+          previousVideo.style.opacity = 0;
+        }
 
-    activePanelKey = panelKey;
+        nextVideo.style.opacity = 1;
+        nextVideo.style.transform = "scale(1)";
+        activeKey = nextKey;
+        setActiveNavItem(nextKey);
+        renderSubmenu(nextKey);
+      }
+    };
+
+    if (immediate || SWITCH_DELAY_MS === 0) {
+      runSwitch();
+      return;
+    }
+
+    switchTimer = window.setTimeout(runSwitch, SWITCH_DELAY_MS);
   };
 
-  videos.forEach((video) => {
+  const resetHeroMotion = () => {
+    if (!heroWrapper) {
+      return;
+    }
+
+    heroWrapper.style.setProperty("--hero-media-offset-x", "0px");
+    heroWrapper.style.setProperty("--hero-media-offset-y", "0px");
+    heroWrapper.style.setProperty("--hero-stage-offset-x", "0px");
+    heroWrapper.style.setProperty("--hero-stage-offset-y", "0px");
+
+    if (heroCursor) {
+      heroCursor.classList.remove("is-visible", "is-hover");
+    }
+  };
+
+  const updateHeroMotion = (event) => {
+    if (!heroWrapper || !hasFinePointer || prefersReducedMotion) {
+      return;
+    }
+
+    const bounds = heroWrapper.getBoundingClientRect();
+    const relativeX = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const relativeY = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+    heroWrapper.style.setProperty("--hero-media-offset-x", `${relativeX * 24}px`);
+    heroWrapper.style.setProperty("--hero-media-offset-y", `${relativeY * 18}px`);
+    heroWrapper.style.setProperty("--hero-stage-offset-x", `${relativeX * 12}px`);
+    heroWrapper.style.setProperty("--hero-stage-offset-y", `${relativeY * 10}px`);
+  };
+
+  if (window.gsap && heroCursor && hasFinePointer && !prefersReducedMotion) {
+    const cursorToX = window.gsap.quickTo(heroCursor, "x", { duration: 0.32, ease: "power3.out" });
+    const cursorToY = window.gsap.quickTo(heroCursor, "y", { duration: 0.32, ease: "power3.out" });
+
+    heroWrapper.addEventListener("pointerenter", () => {
+      heroCursor.classList.add("is-visible");
+    });
+
+    heroWrapper.addEventListener("pointermove", (event) => {
+      cursorToX(event.clientX);
+      cursorToY(event.clientY);
+      updateHeroMotion(event);
+      heroCursor.classList.add("is-visible");
+    });
+
+    heroWrapper.addEventListener("pointerleave", () => {
+      resetHeroMotion();
+      cursorToX(-120);
+      cursorToY(-120);
+    });
+
+    const hoverTargets = Array.from(
+      heroWrapper.querySelectorAll(".nav-item, .hero-secondary, .hero-menu-toggle, .hero-mobile-link")
+    );
+
+    hoverTargets.forEach((target) => {
+      target.addEventListener("pointerenter", () => {
+        heroCursor.classList.add("is-hover", "is-visible");
+      });
+
+      target.addEventListener("pointerleave", () => {
+        heroCursor.classList.remove("is-hover");
+      });
+    });
+  }
+
+  videos.forEach((video, index) => {
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
+
+    if (index === 0) {
+      video.classList.add(activeClass);
+      video.style.opacity = 1;
+      video.style.transform = "scale(1)";
+    } else {
+      video.style.opacity = 0;
+      video.style.transform = "scale(1.06)";
+    }
+
     if (!prefersReducedMotion) {
       safePlay(video);
     }
   });
 
-  navItems.forEach((item) => {
-    item.addEventListener("mouseenter", () => {
-      const target = item.dataset.videoTarget;
-      if (target) {
-        queueSwitch(target);
-      }
+  setActiveNavItem(activeKey);
+  renderSubmenu(activeKey);
 
-      openPanel(item.dataset.panelTarget, item);
+  heroNavItems.forEach((item) => {
+    item.addEventListener("pointerenter", () => {
+      switchVideo(item.dataset.heroTarget || "default");
     });
 
     item.addEventListener("focus", () => {
-      const target = item.dataset.videoTarget;
-      if (target) {
-        queueSwitch(target);
-      }
-
-      openPanel(item.dataset.panelTarget, item);
+      switchVideo(item.dataset.heroTarget || "default", true);
     });
 
     item.addEventListener("click", () => {
-      openPanel(item.dataset.panelTarget, item);
+      switchVideo(item.dataset.heroTarget || "default", true);
     });
   });
+
+  if (heroSidebar) {
+    heroSidebar.addEventListener("pointerleave", () => {
+      switchVideo("default");
+    });
+  }
 
   if (menuToggle && mobileMenu) {
     menuToggle.addEventListener("click", () => {
@@ -206,28 +369,6 @@ if (videos.length > 0) {
     if (!window.matchMedia("(max-width: 760px)").matches) {
       closeMenu();
     }
-  });
-
-  if (navDock) {
-    navDock.addEventListener("mouseenter", clearPanelHide);
-
-    navDock.addEventListener("mouseleave", () => {
-      queueSwitch("default");
-      queueClosePanels();
-    });
-  }
-
-  panels.forEach((panel) => {
-    panel.addEventListener("mousemove", (event) => {
-      const rect = panel.getBoundingClientRect();
-      const ratio = (event.clientX - rect.left) / rect.width - 0.5;
-      panel.style.setProperty("--parallax-x", `${ratio * 6}px`);
-    });
-
-    panel.addEventListener("mouseleave", () => {
-      panel.style.setProperty("--parallax-x", "0px");
-      queueClosePanels();
-    });
   });
 
   document.addEventListener(
@@ -266,8 +407,18 @@ if (showcaseSection && window.gsap && window.ScrollTrigger) {
 
     const originalText = typingTarget.dataset.mobileTyping || typingTarget.textContent.trim();
     typingTarget.dataset.typingLoopStarted = "true";
-    typingTarget.textContent = "";
     typingTarget.classList.add("is-typing-years");
+
+    const textNode = typingTarget.querySelector(".basant-typewriter-text");
+    const cursorNode = typingTarget.querySelector(".basant-typewriter-cursor");
+
+    if (!textNode || !cursorNode) {
+      typingTarget.textContent = "";
+      typingTarget.textContent = originalText;
+      return;
+    }
+
+    textNode.textContent = "";
 
     const typeDelay = 90;
     const deleteDelay = 60;
@@ -277,7 +428,7 @@ if (showcaseSection && window.gsap && window.ScrollTrigger) {
 
     const typeNext = () => {
       charIndex += 1;
-      typingTarget.textContent = originalText.slice(0, charIndex);
+      textNode.textContent = originalText.slice(0, charIndex);
 
       if (charIndex < originalText.length) {
         window.setTimeout(typeNext, typeDelay);
@@ -289,7 +440,7 @@ if (showcaseSection && window.gsap && window.ScrollTrigger) {
 
     const deleteNext = () => {
       charIndex -= 1;
-      typingTarget.textContent = originalText.slice(0, Math.max(charIndex, 0));
+      textNode.textContent = originalText.slice(0, Math.max(charIndex, 0));
 
       if (charIndex > 0) {
         window.setTimeout(deleteNext, deleteDelay);
@@ -305,8 +456,8 @@ if (showcaseSection && window.gsap && window.ScrollTrigger) {
   window.ScrollTrigger.create({
     trigger: showcaseSection,
     start: "top 84%",
-    once: true,
-    onEnter: startTypingLoop
+    onEnter: startTypingLoop,
+    toggleActions: "play pause resume pause"
   });
 
   if (prefersReducedMotion) {
@@ -366,7 +517,7 @@ if (showcaseSection && window.gsap && window.ScrollTrigger) {
           trigger: showcaseSection,
           start: "top 82%",
           end: "bottom 20%",
-          once: true
+          scrub: 0.95
         }
       })
         .to(textItems, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "power2.out" }, 0.12)

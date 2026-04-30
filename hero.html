@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basant Retro - Minimalist Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Applied GothamLight as requested */
+            --gotham-stack: "GothamLight", "Montserrat", Helvetica, Arial, sans-serif;
+            --basant-light-grey: #eeeeee; 
+            --text-dark: #111111;
+            --text-white: #ffffff;
+            --transition-speed: 0.85s;
+            --easing: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            border: none; 
+        }
+
+        body, html {
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: var(--gotham-stack);
+        }
+
+        /* --- BACKGROUND LAYERS --- */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+        }
+
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            filter: brightness(0.4);
+        }
+
+        .bg-layer.active { opacity: 1; }
+
+        /* --- HEADER --- */
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 80px;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            color: var(--text-white);
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 12px;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 25px;
+        }
+
+        .social-icons a {
+            color: var(--text-white);
+            font-size: 15px;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-icons a:hover { opacity: 0.5; }
+
+        /* --- DISCOVER RETRO BAR (Fine Lines) --- */
+        .discover-bar {
+            position: absolute;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 1400px;
+            display: flex;
+            align-items: center;
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        .discover-bar::before,
+        .discover-bar::after {
+            content: '';
+            flex: 1;
+            height: 0.5px; /* Extremely thin line */
+            background: rgba(255, 255, 255, 0.25); /* Subtle, elegant opacity */
+        }
+
+        .discover-text {
+            padding: 0 40px;
+            font-family: var(--gotham-stack);
+            font-weight: 300; /* Thin Font weight */
+            font-size: 12px;
+            letter-spacing: 8px;
+            color: var(--text-white);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* --- CENTERED NAVIGATION --- */
+        .nav-wrapper {
+            display: flex;
+            width: 80%; 
+            max-width: 1400px;
+            margin: 0 auto; 
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        .nav-column {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-column::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: var(--basant-light-grey);
+            transition: height var(--transition-speed) var(--easing);
+            z-index: -1;
+        }
+
+        .nav-column:has(.hover-trigger-zone:hover)::before {
+            height: 100%;
+        }
+
+        /* --- HOVER TRIGGER ZONE --- */
+        .hover-trigger-zone {
+            padding: 40px 20px;
+            padding-bottom: 70px;
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- SUB-CONTENT --- */
+        .sub-content {
+            opacity: 0;
+            height: 0;
+            transform: translateY(15px);
+            transition: all 0.6s var(--easing);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .hover-trigger-zone:hover .sub-content {
+            opacity: 1;
+            height: 190px;
+            transform: translateY(0);
+            margin-bottom: 30px;
+        }
+
+        .sub-item {
+            color: var(--text-dark);
+            font-family: var(--gotham-stack);
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .sub-item:hover { opacity: 0.5; }
+
+        .visit-link {
+            color: var(--text-dark);
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* --- NAV LABEL (Thin Typography) --- */
+        .nav-label {
+            color: var(--text-white);
+            font-family: var(--gotham-stack);
+            font-size: 16px;
+            font-weight: 300; /* Set to thin GothamLight */
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            transition: color 0.4s ease, transform 0.5s var(--easing);
+        }
+
+        .hover-trigger-zone:hover .nav-label {
+            color: var(--text-dark);
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+      <a href="index.html" class="brand-logo">BASANT</a>
+        <div class="social-icons">
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#"><i class="fa-brands fa-pinterest-p"></i></a>
+        </div>
+    </header>
+
+    <div class="bg-container">
+        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1600" class="bg-layer active" id="bg-default">
+        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600" class="bg-layer" id="bg-1">
+        <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1600" class="bg-layer" id="bg-2">
+        <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1600" class="bg-layer" id="bg-3">
+        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600" class="bg-layer" id="bg-4">
+        <img src="https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1600" class="bg-layer" id="bg-5">
+    </div>
+
+    <div class="discover-bar">
+        <span class="discover-text">Discover Retro</span>
+    </div>
+
+    <div class="nav-wrapper">
+        <div class="nav-column">
+            <div class="hover-trigger-zone" onmouseenter="showBg('bg-1')" onmouseleave="resetBg()">
+                <div class="sub-content">
+                    <a href="about.html" class="sub-item">History</a>
+                    <a href="about.html" class="sub-item">Founder 1</a>
+                    <a href="about.html" class="sub-item">Founder 2</a>
+                    <a href="about.html" class="sub-item">Certification</a>
+                    <a href="about.html" class="sub-item">Materials</a>
+                    <a href="about.html" class="sub-item">Factory</a>
+                    <a href="about.html" class="sub-item">Design</a>
+                    <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+                <span class="nav-label">About Us</span>
+            </div>
+        </div>
+
+        <div class="nav-column">
+            <div class="hover-trigger-zone" onmouseenter="showBg('bg-2')" onmouseleave="resetBg()">
+                <div class="sub-content">
+                    <a href="showroom.html" class="sub-item">Showroom</a>
+                    <a href="showroom.html" class="sub-item">Gallery</a>
+                    <a href="showroom.html" class="sub-item">Experience</a>
+                    <a href="showroom.html" class="sub-item">Visit</a>
+                    <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+                <span class="nav-label">Inside Basant</span>
+            </div>
+        </div>
+
+        <div class="nav-column">
+            <div class="hover-trigger-zone" onmouseenter="showBg('bg-3')" onmouseleave="resetBg()">
+                <div class="sub-content">
+                    <a href="#" class="sub-item">Furniture</a>
+                    <a href="#" class="sub-item">Lighting</a>
+                    <a href="#" class="sub-item">Wall Decor</a>
+                    <a href="#" class="sub-item">Showroom</a>
+                    <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+                <span class="nav-label">Products</span>
+            </div>
+        </div>
+
+        <div class="nav-column">
+            <div class="hover-trigger-zone" onmouseenter="showBg('bg-4')" onmouseleave="resetBg()">
+                <div class="sub-content">
+                    <a href="#" class="sub-item">Residential</a>
+                    <a href="#" class="sub-item">Hospitality</a>
+                    <a href="#" class="sub-item">Commercial</a>
+                    <a href="#" class="sub-item">Gallery</a>
+                    <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+                <span class="nav-label">Projects</span>
+            </div>
+        </div>
+
+        <div class="nav-column">
+            <div class="hover-trigger-zone" onmouseenter="showBg('bg-5')" onmouseleave="resetBg()">
+                <div class="sub-content">
+                    <a href="#" class="sub-item">Location</a>
+                    <a href="#" class="sub-item">Inquiry</a>
+                    <a href="#" class="sub-item">Careers</a>
+                    <a href="#" class="sub-item">Support</a>
+                    <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+                <span class="nav-label">Contact</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allLayers = document.querySelectorAll('.bg-layer');
+        const defaultBg = document.getElementById('bg-default');
+
+        function showBg(id) {
+            const target = document.getElementById(id);
+            allLayers.forEach(layer => layer.classList.remove('active'));
+            target.classList.add('active');
+        }
+
+        function resetBg() {
+            allLayers.forEach(layer => layer.classList.remove('active'));
+            defaultBg.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>

@@ -3,149 +3,397 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Power AI Hero</title>
+  <title>Basant Retro - Minimalist Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hero-section.hero-minimalist {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+    }
+
+    .hero-section.hero-minimalist * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .hero-section.hero-minimalist header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 40px 80px;
+      z-index: 100;
+    }
+
+    .hero-section.hero-minimalist .brand-logo {
+      color: #fff;
+      font-family: "Playfair Display", serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 12px;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .hero-section.hero-minimalist .social-icons {
+      display: flex;
+      gap: 25px;
+    }
+
+    .hero-section.hero-minimalist .social-icons a {
+      color: #fff;
+      font-size: 15px;
+      transition: opacity 0.3s ease;
+    }
+
+    .hero-section.hero-minimalist .social-icons a:hover {
+      opacity: 0.5;
+    }
+
+    .hero-section.hero-minimalist .bg-container {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .hero-section.hero-minimalist .bg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      filter: brightness(0.4);
+    }
+
+    .hero-section.hero-minimalist .bg-layer.active {
+      opacity: 1;
+    }
+
+    .hero-section.hero-minimalist .discover-bar {
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 1400px;
+      display: flex;
+      align-items: center;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .hero-section.hero-minimalist .discover-bar::before,
+    .hero-section.hero-minimalist .discover-bar::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .hero-section.hero-minimalist .discover-text {
+      padding: 0 40px;
+      font-family: "GothamLight", "Montserrat", Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      font-size: 12px;
+      letter-spacing: 8px;
+      color: #fff;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .hero-section.hero-minimalist .nav-wrapper {
+      display: flex;
+      width: 80%;
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 100vh;
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero-section.hero-minimalist .nav-column {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section.hero-minimalist .nav-column::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background-color: #eeeeee;
+      transition: height 0.85s cubic-bezier(0.19, 1, 0.22, 1);
+      z-index: -1;
+    }
+
+    .hero-section.hero-minimalist .nav-column.is-hovered::before {
+      height: 100%;
+    }
+
+    .hero-section.hero-minimalist .hover-trigger-zone {
+      padding: 40px 20px 70px;
+      cursor: pointer;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-section.hero-minimalist .sub-content {
+      opacity: 0;
+      height: 0;
+      transform: translateY(15px);
+      transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .hero-section.hero-minimalist .hover-trigger-zone:hover .sub-content {
+      opacity: 1;
+      height: 190px;
+      transform: translateY(0);
+      margin-bottom: 30px;
+    }
+
+    .hero-section.hero-minimalist .sub-item {
+      color: #111;
+      font-family: "GothamLight", "Montserrat", Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+
+    .hero-section.hero-minimalist .sub-item:hover {
+      opacity: 0.5;
+    }
+
+    .hero-section.hero-minimalist .visit-link {
+      color: #111;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .hero-section.hero-minimalist .nav-label {
+      color: #fff;
+      font-family: "GothamLight", "Montserrat", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      transition: color 0.4s ease, transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .hero-section.hero-minimalist .hover-trigger-zone:hover .nav-label {
+      color: #111;
+      transform: translateY(-5px);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-section.hero-minimalist header {
+        padding: 28px 24px;
+      }
+
+      .hero-section.hero-minimalist .nav-wrapper {
+        width: 100%;
+      }
+
+      .hero-section.hero-minimalist .discover-bar {
+        bottom: 140px;
+        width: calc(100% - 32px);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .hero-section.hero-minimalist {
+        min-height: 100svh;
+      }
+
+      .hero-section.hero-minimalist header {
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .hero-section.hero-minimalist .nav-wrapper {
+        flex-direction: column;
+        height: 100svh;
+      }
+
+      .hero-section.hero-minimalist .nav-column {
+        justify-content: center;
+      }
+
+      .hero-section.hero-minimalist .discover-bar {
+        bottom: 120px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <section class="hero-section">
-    <div class="hero-wrapper">
-      <div class="hero-video-stack" aria-hidden="true">
-        <video class="hero-video-layer is-active" data-video="default" muted playsinline preload="auto" loop>
-          <source src="assets/vid.mp4" type="video/mp4">
-        </video>
-        <video class="hero-video-layer" data-video="about" muted playsinline preload="auto" loop>
-          <source src="assets/vid%20(3).mp4" type="video/mp4">
-        </video>
-        <video class="hero-video-layer" data-video="contact" muted playsinline preload="auto" loop>
-          <source src="assets/vid%20(2).mp4" type="video/mp4">
-        </video>
-        <video class="hero-video-layer" data-video="projects" muted playsinline preload="auto" loop>
-          <source src="assets/vid%20(2).mp4" type="video/mp4">
-        </video>
-        <video class="hero-video-layer" data-video="showroom" muted playsinline preload="auto" loop>
-          <source src="assets/vid%20(3).mp4" type="video/mp4">
-        </video>
-        <video class="hero-video-layer" data-video="products" muted playsinline preload="auto" loop>
-          <source src="assets/vid.mp4" type="video/mp4">
-        </video>
+  <section class="hero-section hero-minimalist">
+    <header>
+      <a href="index.html" class="brand-logo">BASANT</a>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="#"><i class="fa-brands fa-pinterest-p"></i></a>
+      </div>
+    </header>
+
+    <div class="bg-container">
+      <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1600" class="bg-layer active" id="bg-default" alt="Luxury interior background">
+      <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1600" class="bg-layer" id="bg-1" alt="Background for About Us">
+      <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1600" class="bg-layer" id="bg-2" alt="Background for Inside Basant">
+      <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1600" class="bg-layer" id="bg-3" alt="Background for Products">
+      <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600" class="bg-layer" id="bg-4" alt="Background for Projects">
+      <img src="https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1600" class="bg-layer" id="bg-5" alt="Background for Contact">
+    </div>
+
+    <div class="discover-bar">
+      <span class="discover-text">Discover Retro</span>
+    </div>
+
+    <div class="nav-wrapper">
+      <div class="nav-column">
+        <div class="hover-trigger-zone" onmouseenter="showBg('bg-1')" onmouseleave="resetBg()">
+          <div class="sub-content">
+            <a href="about.html" class="sub-item">History</a>
+            <a href="about.html" class="sub-item">Founder 1</a>
+            <a href="about.html" class="sub-item">Founder 2</a>
+            <a href="about.html" class="sub-item">Certification</a>
+            <a href="about.html" class="sub-item">Materials</a>
+            <a href="about.html" class="sub-item">Factory</a>
+            <a href="about.html" class="sub-item">Design</a>
+            <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+          <span class="nav-label">About Us</span>
+        </div>
       </div>
 
-      <div class="hero-content-layer">
-        <div class="hero-blur-shape" aria-hidden="true"></div>
-        <div class="hero-brand">Retro INC</div>
-
-        <div class="hero-main">
-          <div class="hero-main-inner">
-            <h1 class="hero-headline"><span class="hero-headline-plain">India's No </span><span class="hero-headline-gradient">1</span></h1>
-            <p class="hero-subtitle">Reclaim furniture provider.</p>
-            <a class="hero-secondary hero-cta" href="contact.html">Schedule a Consult</a>
+      <div class="nav-column">
+        <div class="hover-trigger-zone" onmouseenter="showBg('bg-2')" onmouseleave="resetBg()">
+          <div class="sub-content">
+            <a href="showroom.html" class="sub-item">Showroom</a>
+            <a href="showroom.html" class="sub-item">Gallery</a>
+            <a href="showroom.html" class="sub-item">Experience</a>
+            <a href="showroom.html" class="sub-item">Visit</a>
+            <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
           </div>
+          <span class="nav-label">Inside Basant</span>
         </div>
+      </div>
 
-        <div class="hero-marquee-section">
-          <div class="hero-marquee-container">
-            <p class="hero-marquee-label">Relied on by brands<br>across the globe</p>
-
-            <div class="hero-marquee-viewport" aria-label="Trusted brands">
-              <div class="hero-marquee-track">
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">V</span><span>Vortex</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">N</span><span>Nimbus</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">P</span><span>Prysma</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">C</span><span>Cirrus</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">K</span><span>Kynder</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">H</span><span>Halcyn</span></div>
-
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">V</span><span>Vortex</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">N</span><span>Nimbus</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">P</span><span>Prysma</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">C</span><span>Cirrus</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">K</span><span>Kynder</span></div>
-                <div class="hero-brand-item"><span class="liquid-glass brand-icon">H</span><span>Halcyn</span></div>
-              </div>
-            </div>
+      <div class="nav-column">
+        <div class="hover-trigger-zone" onmouseenter="showBg('bg-3')" onmouseleave="resetBg()">
+          <div class="sub-content">
+            <a href="products.html" class="sub-item">Furniture</a>
+            <a href="products.html" class="sub-item">Lighting</a>
+            <a href="products.html" class="sub-item">Wall Decor</a>
+            <a href="showroom.html" class="sub-item">Showroom</a>
+            <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
           </div>
+          <span class="nav-label">Products</span>
         </div>
+      </div>
 
-        <div class="hero-nav-dock">
-          <button class="hero-menu-toggle" type="button" data-hero-menu-toggle aria-expanded="false" aria-controls="hero-mobile-menu">
-            <span class="hero-menu-icon" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-            <span class="hero-menu-label">Menu</span>
-          </button>
-
-          <div class="hero-mobile-menu" id="hero-mobile-menu" data-hero-mobile-menu hidden>
-            <div class="hero-mobile-menu-backdrop" data-hero-mobile-menu-close></div>
-            <div class="hero-mobile-menu-panel">
-              <div class="hero-mobile-menu-head">
-                <div>
-                  <p class="hero-mobile-menu-kicker">Retro INC</p>
-                  <h2>Explore</h2>
-                </div>
-                <button class="hero-mobile-menu-close" type="button" data-hero-mobile-menu-close aria-label="Close menu">×</button>
-              </div>
-
-              <nav class="hero-mobile-links" aria-label="Mobile primary">
-                <a class="hero-mobile-link" href="index.html" data-video-target="default">Home</a>
-                <a class="hero-mobile-link" href="about.html" data-video-target="about">About Us</a>
-                <a class="hero-mobile-link" href="contact.html" data-video-target="contact">Contact Us</a>
-                <a class="hero-mobile-link" href="showroom.html" data-video-target="showroom">Virtual Showroom</a>
-                <a class="hero-mobile-link" href="products.html" data-video-target="products">Products</a>
-              </nav>
-            </div>
+      <div class="nav-column">
+        <div class="hover-trigger-zone" onmouseenter="showBg('bg-4')" onmouseleave="resetBg()">
+          <div class="sub-content">
+            <a href="#craft-showcase" class="sub-item">Residential</a>
+            <a href="#craft-showcase" class="sub-item">Hospitality</a>
+            <a href="#craft-showcase" class="sub-item">Commercial</a>
+            <a href="#craft-showcase" class="sub-item">Gallery</a>
+            <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
           </div>
+          <span class="nav-label">Projects</span>
+        </div>
+      </div>
 
-          <div class="hero-panels" aria-hidden="true">
-            <div class="mega-panel" data-panel="about">
-              <p class="mega-panel-title">About Us</p>
-              <ul class="mega-list">
-                <li class="mega-link" style="--stagger: 0">Inside Retro</li>
-                <li class="mega-link" style="--stagger: 1">Founders</li>
-                <li class="mega-link" style="--stagger: 2">Workers</li>
-                <li class="mega-link" style="--stagger: 3">Policies</li>
-              </ul>
-            </div>
-
-            <div class="mega-panel" data-panel="products">
-              <p class="mega-panel-title">Products</p>
-              <div class="mega-grid">
-                <button class="mega-chip" style="--stagger: 0" type="button">Furniture</button>
-                <button class="mega-chip" style="--stagger: 1" type="button">Lighting</button>
-                <button class="mega-chip" style="--stagger: 2" type="button">Walls</button>
-              </div>
-            </div>
-
-            <div class="mega-panel" data-panel="projects">
-              <p class="mega-panel-title">Projects</p>
-              <ul class="mega-list">
-                <li class="mega-link has-dot" style="--stagger: 0">Cafe</li>
-                <li class="mega-link has-dot" style="--stagger: 1">House</li>
-                <li class="mega-link has-dot" style="--stagger: 2">Office</li>
-                <li class="mega-link has-dot" style="--stagger: 3">Showroom</li>
-              </ul>
-            </div>
+      <div class="nav-column">
+        <div class="hover-trigger-zone" onmouseenter="showBg('bg-5')" onmouseleave="resetBg()">
+          <div class="sub-content">
+            <a href="contact.html" class="sub-item">Location</a>
+            <a href="contact.html" class="sub-item">Inquiry</a>
+            <a href="contact.html" class="sub-item">Careers</a>
+            <a href="contact.html" class="sub-item">Support</a>
+            <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
           </div>
-
-          <nav class="hero-nav hero-nav-bottom" aria-label="Primary">
-            <a class="nav-item" href="index.html" data-video-target="default">HOME</a>
-            <a class="nav-item" href="about.html" data-video-target="about" data-panel-target="about">About Us</a>
-            <a class="nav-item" href="contact.html" data-video-target="contact">Contact Us</a>
-            <a class="nav-item" href="products.html" data-video-target="projects" data-panel-target="projects">Projects</a>
-            <a class="nav-item" href="showroom.html" data-video-target="showroom">Virtual Showroom</a>
-            <a class="nav-item" href="products.html" data-video-target="products" data-panel-target="products">Products</a>
-          </nav>
+          <span class="nav-label">Contact</span>
         </div>
       </div>
     </div>
+
+    <script>
+      const allLayers = document.querySelectorAll('.hero-section.hero-minimalist .bg-layer');
+      const defaultBg = document.getElementById('bg-default');
+      const triggers = Array.from(document.querySelectorAll('.hero-section.hero-minimalist .hover-trigger-zone'));
+
+      function showBg(id) {
+        const target = document.getElementById(id);
+        if (!target) {
+          return;
+        }
+
+        allLayers.forEach((layer) => layer.classList.remove('active'));
+        target.classList.add('active');
+      }
+
+      function resetBg() {
+        allLayers.forEach((layer) => layer.classList.remove('active'));
+        if (defaultBg) {
+          defaultBg.classList.add('active');
+        }
+      }
+
+      triggers.forEach((trigger) => {
+        const column = trigger.closest('.nav-column');
+        trigger.addEventListener('mouseenter', () => {
+          if (column) {
+            column.classList.add('is-hovered');
+          }
+          showBg(trigger.getAttribute('onmouseenter').match(/'([^']+)'/)[1]);
+        });
+
+        trigger.addEventListener('mouseleave', () => {
+          if (column) {
+            column.classList.remove('is-hovered');
+          }
+          resetBg();
+        });
+      });
+
+      resetBg();
+    </script>
   </section>
 
   <section class="basant-section" id="craft-showcase">
     <div class="basant-container">
       <div class="basant-content">
         <div class="basant-stats">
-          <h2 class="basant-stat" data-mobile-typing="11+ Years">11+ Years</h2>
+          <h2 class="basant-stat" data-mobile-typing="11+ Years"><span class="basant-typewriter-text">11+ Years</span><span class="basant-typewriter-cursor" aria-hidden="true"></span></h2>
           <h2 class="basant-stat">30+ Countries</h2>
         </div>
 
