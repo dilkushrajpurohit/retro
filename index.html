@@ -249,6 +249,76 @@
         bottom: 120px;
       }
     }
+
+    /* Improved mobile touch behavior and sizing */
+    @media (max-width: 520px) {
+      .hero-section.hero-minimalist header {
+        padding: 20px 16px;
+      }
+
+      .hero-section.hero-minimalist .brand-logo {
+        font-size: 18px;
+        letter-spacing: 8px;
+      }
+
+      .hero-section.hero-minimalist .social-icons {
+        gap: 14px;
+      }
+
+      .hero-section.hero-minimalist .discover-bar {
+        bottom: 96px;
+        width: calc(100% - 28px);
+      }
+
+      .hero-section.hero-minimalist .discover-text {
+        padding: 0 18px;
+        font-size: 11px;
+        letter-spacing: 6px;
+      }
+
+      .hero-section.hero-minimalist .nav-wrapper {
+        width: 100%;
+        height: auto;
+        padding: 10px 0 40px;
+      }
+
+      .hero-section.hero-minimalist .nav-column {
+        min-height: 64px;
+      }
+
+      .hero-section.hero-minimalist .hover-trigger-zone {
+        padding: 18px 14px 22px;
+      }
+
+      /* Make sub-content visible on small/touch devices so users can tap links */
+      .hero-section.hero-minimalist .sub-content {
+        opacity: 1;
+        height: auto;
+        transform: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 12px;
+        overflow: visible;
+      }
+
+      .hero-section.hero-minimalist .sub-item,
+      .hero-section.hero-minimalist .visit-link {
+        color: #fff;
+        background: rgba(255,255,255,0.04);
+        padding: 10px 12px;
+        border-radius: 6px;
+      }
+
+      .hero-section.hero-minimalist .nav-label {
+        font-size: 14px;
+        letter-spacing: 3px;
+      }
+
+      .hero-section.hero-minimalist .nav-column::before {
+        height: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -269,7 +339,7 @@
       <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?q=80&w=1600" class="bg-layer" id="bg-2" alt="Background for Inside Basant">
       <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1600" class="bg-layer" id="bg-3" alt="Background for Products">
       <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1600" class="bg-layer" id="bg-4" alt="Background for Projects">
-      <img src="https://images.unsplash.com/photo-1505691938895-1758d7eaa511?q=80&w=1600" class="bg-layer" id="bg-5" alt="Background for Contact">
+      <img src="assets/factory _page-0003.jpg" class="bg-layer" id="bg-5" alt="Background for Contact">
     </div>
 
     <div class="discover-bar">
@@ -296,10 +366,10 @@
       <div class="nav-column">
         <div class="hover-trigger-zone" onmouseenter="showBg('bg-2')" onmouseleave="resetBg()">
           <div class="sub-content">
-            <a href="showroom.html" class="sub-item">Showroom</a>
-            <a href="showroom.html" class="sub-item">Gallery</a>
-            <a href="showroom.html" class="sub-item">Experience</a>
-            <a href="showroom.html" class="sub-item">Visit</a>
+            <a href="showroom-access.html" class="sub-item">Showroom</a>
+            <a href="showroom-access.html" class="sub-item">Gallery</a>
+            <a href="showroom-access.html" class="sub-item">Experience</a>
+            <a href="showroom-access.html" class="sub-item">Visit</a>
             <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
           </div>
           <span class="nav-label">Inside Basant</span>
@@ -312,7 +382,7 @@
             <a href="products.html" class="sub-item">Furniture</a>
             <a href="products.html" class="sub-item">Lighting</a>
             <a href="products.html" class="sub-item">Wall Decor</a>
-            <a href="showroom.html" class="sub-item">Showroom</a>
+            <a href="showroom-access.html" class="sub-item">Showroom</a>
             <div class="visit-link"><i class="fa-solid fa-arrow-right"></i></div>
           </div>
           <span class="nav-label">Products</span>
@@ -405,23 +475,23 @@
       <div class="basant-visual" id="story-frame">
         <div class="assemble-frame">
           <article class="frame-image frame-main" data-assemble="main">
-            <img src="assets/img1.jpg" alt="Reclaimed wood hero interior">
+            <img src="assets/wooden%20_page-0001.jpg" alt="Reclaimed wood materials and board stock">
           </article>
 
           <article class="frame-image frame-support frame-top-right" data-assemble="top-right">
-            <img src="assets/img2.jpg" alt="Detail shot of premium furniture">
+            <img src="assets/factory%20_page-0001.jpg" alt="Workshop production floor">
           </article>
 
           <article class="frame-image frame-support frame-bottom-left" data-assemble="bottom-left">
-            <img src="assets/img3.jpg" alt="Warm luxury residential styling">
+            <img src="assets/import%20export%20_page-0001.jpg" alt="Export logistics and shipping scene">
           </article>
 
           <article class="frame-image frame-support frame-right-mid" data-assemble="right-mid">
-            <img src="assets/img4.jpg" alt="Architectural composition with wood textures">
+            <img src="assets/founder1.jpg" alt="Team and founder portrait">
           </article>
 
           <article class="frame-image frame-support frame-top-left" data-assemble="top-left">
-            <img src="assets/img5.jpg" alt="Bespoke handcrafted accessory display">
+            <img src="assets/wooden%20_page-0001.jpg" alt="Detailed wood texture and material closeup">
           </article>
         </div>
       </div>
@@ -472,5 +542,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="js/script.js"></script>
+  <!-- Start of LiveChat (www.livechat.com) code -->
+<script>
+    window.__lc = window.__lc || {};
+    window.__lc.license = 19686463;
+    window.__lc.integration_name = "manual_onboarding";
+    window.__lc.product_name = "livechat";
+    ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.livechatinc.com/tracking.js",t.head.appendChild(n)}};!n.__lc.asyncInit&&e.init(),n.LiveChatWidget=n.LiveChatWidget||e}(window,document,[].slice))
+</script>
+<noscript><a href="https://www.livechat.com/chat-with/19686463/" rel="nofollow">Chat with us</a>, powered by <a href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a></noscript>
+<!-- End of LiveChat code -->
+
 </body>
 </html>

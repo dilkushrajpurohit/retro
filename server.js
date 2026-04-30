@@ -57,18 +57,39 @@ const fileExists = async (filePath) => {
 };
 
 const loadFirebaseServiceAccount = async () => {
-  const inlineJson = String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
-  if (inlineJson) {
-    const parsed = JSON.parse(inlineJson);
-    if (process.env.FIREBASE_PRIVATE_KEY) {
-      parsed.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
+  // Support multiple ways to provide credentials:
+  // - FIREBASE_SERVICE_ACCOUNT: inline JSON string OR file path
+  // - FIREBASE_SERVICE_ACCOUNT_JSON: inline JSON string
+  // - FIREBASE_SERVICE_ACCOUNT_B64: base64-encoded JSON
+  // - FIREBASE_SERVICE_ACCOUNT_PATH: filesystem path to JSON
+
+  const envCandidate = String(process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
+
+  if (envCandidate) {
+    // If it looks like JSON, parse it inline
+    if (envCandidate.startsWith('{')) {
+      const parsed = JSON.parse(envCandidate);
+      if (process.env.FIREBASE_PRIVATE_KEY) {
+        parsed.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
+      }
+      return parsed;
     }
-    return parsed;
+
+    // Otherwise treat it as a path
+    if (await fileExists(envCandidate)) {
+      const file = await readJsonFile(envCandidate, null);
+      if (file && process.env.FIREBASE_PRIVATE_KEY) {
+        file.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
+      }
+      return file;
+    }
   }
 
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON_B64) {
+  // Base64-encoded JSON support
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_B64 || process.env.FIREBASE_SERVICE_ACCOUNT_JSON_B64) {
+    const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_B64 || process.env.FIREBASE_SERVICE_ACCOUNT_JSON_B64;
     try {
-      const decoded = Buffer.from(String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON_B64), 'base64').toString('utf8');
+      const decoded = Buffer.from(String(b64), 'base64').toString('utf8');
       const parsed = JSON.parse(decoded);
       if (process.env.FIREBASE_PRIVATE_KEY) {
         parsed.private_key = String(process.env.FIREBASE_PRIVATE_KEY).replace(/\\n/g, '\n');
@@ -79,6 +100,7 @@ const loadFirebaseServiceAccount = async () => {
     }
   }
 
+  // Finally, try the configured path
   if (await fileExists(firebaseServiceAccountPath)) {
     const file = await readJsonFile(firebaseServiceAccountPath, null);
     if (file && process.env.FIREBASE_PRIVATE_KEY) {
@@ -523,14 +545,35 @@ app.post('/api/catalog/verify-pin', (req, res) => {
   res.json({ message: 'PIN verified.' });
 });
 
+app.post('/api/showroom/verify-pin', (req, res) => {
+  const pin = String(req.body?.pin || '').trim();
+
+  if (pin !== catalogPin) {
+    res.status(401).json({ message: 'Incorrect PIN.' });
+    return;
+  }
+
+  const token = crypto.randomUUID();
+  catalogAccessTokens.set(token, {
+    issuedAt: Date.now()
+  });
+
+  res.setHeader('Set-Cookie', `retro_showroom_access=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200`);
+  res.json({ message: 'PIN verified.' });
+});
+
 app.get('/', (_, res) => res.sendFile(path.join(rootDir, 'index.html')));
 app.get('/index.html', (_, res) => res.sendFile(path.join(rootDir, 'index.html')));
 app.get('/about', (_, res) => res.sendFile(path.join(rootDir, 'about.html')));
 app.get('/about.html', (_, res) => res.sendFile(path.join(rootDir, 'about.html')));
 app.get('/contact', (_, res) => res.sendFile(path.join(rootDir, 'contact.html')));
 app.get('/contact.html', (_, res) => res.sendFile(path.join(rootDir, 'contact.html')));
-app.get('/showroom', (_, res) => res.sendFile(path.join(rootDir, 'showroom.html')));
-app.get('/showroom.html', (_, res) => res.sendFile(path.join(rootDir, 'showroom.html')));
+app.get('/showroom', (_, res) => res.sendFile(path.join(rootDir, 'showroom-access.html')));
+app.get('/showroom.html', (_, res) => res.sendFile(path.join(rootDir, 'showroom-access.html')));
+app.get('/showroom-access', (_, res) => res.sendFile(path.join(rootDir, 'showroom-access.html')));
+app.get('/showroom-access.html', (_, res) => res.sendFile(path.join(rootDir, 'showroom-access.html')));
+app.get('/showroom-tour', (_, res) => res.sendFile(path.join(rootDir, 'showroom.html')));
+app.get('/showroom-tour.html', (_, res) => res.sendFile(path.join(rootDir, 'showroom.html')));
 app.get('/products', (_, res) => res.sendFile(path.join(rootDir, 'products.html')));
 app.get('/products.html', (_, res) => res.sendFile(path.join(rootDir, 'products.html')));
 app.get('/catalog-access', (_, res) => res.sendFile(path.join(rootDir, 'catalog-access.html')));

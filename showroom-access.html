@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catalog Access | Retro INC</title>
+  <title>Showroom Access | Retro INC</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="catalog-gate-page">
@@ -12,8 +12,8 @@
     <nav class="premium-nav-links" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="about.html">About Us</a>
-      <a href="products.html" aria-current="page">Products</a>
-      <a href="showroom-access.html">Showroom</a>
+      <a href="products.html">Products</a>
+      <a href="showroom-access.html" aria-current="page">Showroom</a>
       <a href="contact.html">Contact</a>
     </nav>
   </header>
@@ -21,22 +21,22 @@
   <main class="catalog-gate-main">
     <div class="catalog-gate-shell">
       <section class="catalog-gate-card">
-        <p class="products-section-label">Catalog Security</p>
-        <h1>Enter PIN to view catalog</h1>
-        <p class="catalog-gate-copy">This page is protected. Enter the PIN to continue to the main catalog.</p>
+        <p class="products-section-label">Showroom Security</p>
+        <h1>Enter PIN to view showroom</h1>
+        <p class="catalog-gate-copy">This page is protected. Enter the PIN to continue to the virtual showroom.</p>
 
-        <form class="catalog-gate-form" data-catalog-pin-form>
+        <form class="catalog-gate-form" data-showroom-pin-form>
           <label>
             <span>PIN</span>
             <input type="password" name="pin" inputmode="numeric" autocomplete="off" placeholder="Enter PIN" required>
           </label>
-          <button class="catalog-gate-button" type="submit">Open Catalog</button>
-          <p class="catalog-gate-message" data-catalog-pin-message></p>
+          <button class="catalog-gate-button" type="submit">Open Showroom</button>
+          <p class="catalog-gate-message" data-showroom-pin-message></p>
         </form>
       </section>
     </div>
   </main>
 
-  <script src="js/catalog-access.js"></script>
+  <script src="js/showroom-access.js"></script>
 </body>
 </html>
