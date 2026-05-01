@@ -46,7 +46,7 @@
 
       if (response.ok) {
         setMessage('PIN verified. Redirecting...', 'success');
-        window.location.href = '/showroom-tour';
+        window.location.href = 'showroom-tour.html';
         return;
       }
 
